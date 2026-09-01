@@ -1,0 +1,2688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社員トラブル調査・1on1面談シミュレーター 〜背景4要因・詳細下位分類の見極めと組織防衛〜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --bg-dark: #090d16;
+    --bg-card: #111827;
+    --bg-surface: #1e293b;
+    --bg-input: #0b111e;
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --teal: #0d9488;
+    --amber: #d97706;
+    --purple: #8b5cf6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --border: #2d3b55;
+    --border-subtle: rgba(148, 163, 184, 0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans JP', sans-serif; }
+  
+  html, body {
+    height: 100%;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 1240px;
+    height: calc(100vh - 24px);
+    max-height: 860px;
+    background: var(--bg-card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ヘッダー */
+  header {
+    background: rgba(11, 17, 30, 0.98);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 20;
+  }
+
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .badge-role {
+    background: linear-gradient(135deg, #2563eb, #0d9488);
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .btn-nav {
+    background: #243048;
+    color: #e2e8f0;
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-nav:hover { background: #334155; }
+
+  /* 画面領域 */
+  .screen {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* 1. トップ・ブリーフィング画面（スクロール不要・1画面完結レイアウト） */
+  .intro-screen {
+    padding: 24px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: radial-gradient(circle at 50% 15%, rgba(37, 99, 235, 0.12) 0%, rgba(11, 17, 30, 0.96) 80%);
+    overflow: hidden;
+  }
+
+  .intro-header-block {
+    text-align: center;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .intro-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(37, 99, 235, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #93c5fd;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 14px;
+    border-radius: 20px;
+  }
+
+  .intro-title {
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 1.25;
+    background: linear-gradient(90deg, #f8fafc, #93c5fd, #6ee7b7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .intro-lead {
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 820px;
+  }
+
+  .intro-warning-bar {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 11.5px;
+    color: #fca5a5;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .intro-factors-container {
+    width: 100%;
+    max-width: 1120px;
+  }
+
+  .intro-factors-label {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .intro-factor-card {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border);
+    border-top: 3.5px solid;
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+  }
+  .intro-factor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+  .factor-1 { border-top-color: var(--amber); }
+  .factor-2 { border-top-color: var(--teal); }
+  .factor-3 { border-top-color: var(--primary); }
+  .factor-4 { border-top-color: var(--purple); }
+
+  .factor-card-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+  .factor-1 .factor-card-title { color: #f59e0b; }
+  .factor-2 .factor-card-title { color: #2dd4bf; }
+  .factor-3 .factor-card-title { color: #60a5fa; }
+  .factor-4 .factor-card-title { color: #c084fc; }
+
+  .factor-card-desc {
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .intro-action-block {
+    text-align: center;
+    padding-bottom: 4px;
+  }
+
+  .btn-start-random {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 12px 38px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-start-random:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.7);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+
+  /* 2. 現場通報レポート確認フェーズ */
+  .report-screen {
+    display: none;
+    padding: 20px 32px;
+    overflow-y: auto;
+  }
+
+  .report-container {
+    max-width: 980px;
+    margin: 0 auto;
+    background: #0b111e;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 28px;
+  }
+
+  .report-badge {
+    background: rgba(239, 68, 68, 0.18);
+    color: #f87171;
+    border: 1px solid #ef4444;
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+  }
+
+  .target-profile-bar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .target-avatar-badge {
+    font-size: 32px;
+    width: 52px;
+    height: 52px;
+    background: #1e293b;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .report-section {
+    margin-bottom: 12px;
+    background: rgba(21, 30, 46, 0.7);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .report-section h4 {
+    font-size: 12.5px;
+    color: #60a5fa;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .report-section p {
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.6;
+  }
+
+  /* 3. 1on1対話面談画面 */
+  .dialogue-screen {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .status-sidebar {
+    background: #0b111e;
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+  }
+
+  .gauge-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .gauge-item { display: flex; flex-direction: column; gap: 4px; }
+  .gauge-header { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
+  .gauge-track {
+    width: 100%;
+    height: 7px;
+    background: #1e293b;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .gauge-fill { height: 100%; border-radius: 4px; transition: width 0.35s ease; }
+  .bg-calm { background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981); }
+  .bg-risk { background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); }
+  .bg-fact { background: linear-gradient(90deg, #64748b, #3b82f6, #0d9488); }
+
+  .dossier-box {
+    background: rgba(21, 30, 46, 0.8);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #94a3b8;
+  }
+
+  .chat-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-input);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .chat-history {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+  }
+
+  .chat-bubble {
+    max-width: 86%;
+    padding: 11px 15px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    animation: fadeIn 0.2s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .bubble-npc {
+    align-self: flex-start;
+    background: #182338;
+    border: 1px solid var(--border);
+    color: #f1f5f9;
+    border-bottom-left-radius: 2px;
+  }
+
+  .bubble-player {
+    align-self: flex-end;
+    background: #1d4ed8;
+    color: white;
+    border-bottom-right-radius: 2px;
+  }
+
+  .bubble-sys {
+    align-self: center;
+    background: rgba(36, 48, 72, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #93c5fd;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .bubble-alert {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+    color: #fca5a5;
+    font-weight: 700;
+  }
+
+  .speaker-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    margin-bottom: 3px;
+    color: #94a3b8;
+  }
+
+  .choices-area {
+    flex-shrink: 0;
+    max-height: 310px;
+    background: #090e18;
+    border-top: 1.5px solid var(--border);
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    overflow-y: auto;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.3);
+  }
+
+  .choices-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: #93c5fd;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  .choice-btn {
+    background: #151f33;
+    border: 1px solid var(--border);
+    color: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.45;
+  }
+  .choice-btn:hover {
+    background: #2563eb;
+    border-color: #60a5fa;
+    transform: translateX(3px);
+  }
+  .choice-key {
+    background: #243048;
+    color: #93c5fd;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  /* 4. 2段階診断・意思決定フェーズ */
+  .diagnosis-screen {
+    display: none;
+    padding: 16px 28px;
+    overflow-y: auto;
+  }
+  .diag-box {
+    max-width: 980px;
+    margin: 0 auto;
+    background: #0b111e;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .diag-title {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #60a5fa;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .factor-select-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .factor-card-option {
+    background: #151e2e;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .factor-card-option:hover { border-color: #60a5fa; }
+  .factor-card-option.selected {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.2);
+  }
+
+  /* 下位分類選択エリア */
+  .sub-factor-container {
+    background: rgba(21, 30, 46, 0.9);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  .sub-factor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .sub-option-btn {
+    background: #0b111e;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 11.5px;
+    color: #e2e8f0;
+    transition: 0.2s;
+  }
+  .sub-option-btn:hover { border-color: #60a5fa; }
+  .sub-option-btn.selected {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.18);
+    color: #34d399;
+    font-weight: 700;
+  }
+
+  .action-select-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  /* 5. 最終結果・エンディング画面 */
+  .result-screen {
+    display: none;
+    padding: 18px 26px;
+    overflow-y: auto;
+    text-align: center;
+  }
+
+  .result-rank-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: 30px;
+    margin-bottom: 6px;
+  }
+  .rank-s { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1.5px solid #10b981; }
+  .rank-a { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1.5px solid #f59e0b; }
+  .rank-b { background: rgba(234, 88, 12, 0.2); color: #fb923c; border: 1.5px solid #ea580c; }
+  .rank-c { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1.5px solid #ef4444; }
+
+  .res-ending-title { font-size: 19px; font-weight: 900; margin-bottom: 3px; }
+  .res-ending-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+  .result-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 980px;
+    margin: 0 auto 12px auto;
+  }
+  .res-metric-card {
+    background: #0b111e;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px;
+  }
+  .res-metric-label { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; }
+  .res-metric-val { font-size: 14px; font-weight: 800; }
+
+  /* アドバイス・解説ブロック */
+  .critique-container {
+    max-width: 980px;
+    margin: 0 auto 14px auto;
+    background: #0b111e;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .advice-card {
+    background: rgba(21, 30, 46, 0.9);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #e2e8f0;
+  }
+  .advice-card h5 {
+    font-size: 12.5px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .adv-diag { border-left-color: #60a5fa; }
+  .adv-diag h5 { color: #60a5fa; }
+  .adv-target { border-left-color: #34d399; }
+  .adv-target h5 { color: #34d399; }
+  .adv-org { border-left-color: #f59e0b; }
+  .adv-org h5 { color: #fcd34d; }
+  .adv-law { border-left-color: #ef4444; }
+  .adv-law h5 { color: #f87171; }
+
+  .btn-panel { display: flex; justify-content: center; gap: 12px; }
+  .btn-act {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-act-pri { background: var(--primary); color: white; }
+  .btn-act-pri:hover { background: var(--primary-hover); }
+  .btn-act-sec { background: #243048; color: white; border: 1px solid var(--border); }
+  .btn-act-sec:hover { background: #334155; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- ヘッダー -->
+  <header>
+    <div class="logo-group">
+      <span class="badge-role"><i class="fa-solid fa-user-shield"></i> 人事労務・安全衛生 演習コンソール</span>
+      <span class="header-title">社員トラブル調査・1on1対話面談シミュレーター</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-nav" onclick="resetToHome()"><i class="fa-solid fa-rotate-left"></i> トップに戻る</button>
+    </div>
+  </header>
+
+  <!-- 1. トップ・ブリーフィング画面（1画面ですっきり見渡せるレイアウト） -->
+  <div id="intro-screen" class="screen intro-screen">
+    <div class="intro-header-block">
+      <div class="intro-hero-badge"><i class="fa-solid fa-scale-balanced"></i> 組織防衛 ＆ 人事労務・実践演習</div>
+      <h1 class="intro-title">社員トラブルの深層・2段階詳細診断</h1>
+      <p class="intro-lead">
+        現場からの緊急通報を読み解き、本音と事実を引き出す<strong>【全5ターンの深層1on1面談】</strong>を実施します。<br>
+        提示される4つのアプローチから、相手の特性に応じた最適な一手を選択してください。
+      </p>
+      <div class="intro-warning-bar">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>他ケースの正解アプローチの誤用や不適切な対応が続くと、相手が激怒して面談が決裂します。</span>
+      </div>
+    </div>
+
+    <div class="intro-factors-container">
+      <div class="intro-factors-label"><i class="fa-solid fa-layer-group"></i> 診断対象となるトラブルの4大背景要因</div>
+      <div class="intro-grid">
+        <div class="intro-factor-card factor-1">
+          <div class="factor-card-title"><i class="fa-solid fa-user-gear"></i> ① 性格特性</div>
+          <p class="factor-card-desc">白黒思考・完璧主義・べき思考。業務基準の言語化と加点法チェックで解決。</p>
+        </div>
+        <div class="intro-factor-card factor-2">
+          <div class="factor-card-title"><i class="fa-solid fa-brain"></i> ② メンタル不調</div>
+          <p class="factor-card-desc">うつ状態・双極性軽躁・被害妄想。感情を否定せず受診勧奨と休養が最優先。</p>
+        </div>
+        <div class="intro-factor-card factor-3">
+          <div class="factor-card-title"><i class="fa-solid fa-puzzle-piece"></i> ③ 発達障害特性</div>
+          <p class="factor-card-desc">文字通りの受取・不注意。指示の数値化・テキスト化・環境調整が有効。</p>
+        </div>
+        <div class="intro-factor-card factor-4">
+          <div class="factor-card-title"><i class="fa-solid fa-shield-halved"></i> ④ 人格障害</div>
+          <p class="factor-card-desc">境界性（依存と攻撃反転）・自己愛性。複数人体制で明確な境界線を引く。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="intro-action-block">
+      <button class="btn-start-random" onclick="generateRandomCase()">
+        <i class="fa-solid fa-dice"></i> ランダム事件を引いて調査を開始する
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. 現場通報レポート画面 -->
+  <div id="report-screen" class="screen report-screen">
+    <div class="report-container">
+      <div class="report-badge"><i class="fa-solid fa-triangle-exclamation"></i> 現場からの緊急インシデント報告書（事実・証言）</div>
+      
+      <div class="report-header">
+        <div class="target-profile-bar">
+          <div id="rep-avatar" class="target-avatar-badge">👤</div>
+          <div>
+            <h2 id="rep-name" style="font-size:16px; font-weight:800;">社員名（年齢・所属）</h2>
+            <div id="rep-role" style="font-size:11px; color:var(--text-muted); margin-top:2px;">勤続年数 / 職種 / 過去の評価</div>
+          </div>
+        </div>
+        <div style="text-align:right; font-size:10.5px; color:var(--text-muted); line-height:1.4;">
+          報告者：直属上司・同僚有志<br>
+          重要度：【至急対応要請】
+        </div>
+      </div>
+
+      <div class="report-section">
+        <h4><i class="fa-solid fa-file-lines"></i> 現場で発生している問題事象 & 業務影響</h4>
+        <p id="rep-incident"></p>
+      </div>
+
+      <div class="report-section">
+        <h4><i class="fa-solid fa-users"></i> 関係者の声・周囲の困惑 & 過去の経緯・本人の様子</h4>
+        <p id="rep-voices"></p>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+        <span style="font-size:11px; color:#94a3b8;"><i class="fa-solid fa-circle-info"></i> 表面の怒りや主張に惑わされず、全5ターンの対話で深層真因を探ってください。</span>
+        <button class="btn-act btn-act-pri" onclick="startInterview()">
+          <i class="fa-solid fa-door-open"></i> 本人との1on1面談室へ入室する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 対話面談シミュレーション画面（全5ターン・4択・決裂あり） -->
+  <div id="dialogue-screen" class="screen dialogue-screen">
+    <!-- 左：ステータスサイドバー -->
+    <div class="status-sidebar">
+      <div>
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">
+          <div id="side-avatar" style="font-size:26px;">👤</div>
+          <div>
+            <div id="side-name" style="font-size:13.5px; font-weight:700;">社員名</div>
+            <div style="font-size:10.5px; color:#60a5fa;">面談実施中（第<span id="turn-count">1</span>ターン / 全5ターン）</div>
+          </div>
+        </div>
+
+        <div class="gauge-group">
+          <div class="gauge-item">
+            <div class="gauge-header">
+              <span>相手の冷静度・受容性</span>
+              <span id="val-calm">50%</span>
+            </div>
+            <div class="gauge-track">
+              <div id="bar-calm" class="gauge-fill bg-calm" style="width: 50%;"></div>
+            </div>
+          </div>
+
+          <div class="gauge-item">
+            <div class="gauge-header">
+              <span>組織トラブルリスク（訴訟/暴発）</span>
+              <span id="val-risk">50%</span>
+            </div>
+            <div class="gauge-track">
+              <div id="bar-risk" class="gauge-fill bg-risk" style="width: 50%;"></div>
+            </div>
+          </div>
+
+          <div class="gauge-item">
+            <div class="gauge-header">
+              <span>背景ファクト解明度</span>
+              <span id="val-fact">10%</span>
+            </div>
+            <div class="gauge-track">
+              <div id="bar-fact" class="gauge-fill bg-fact" style="width: 10%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dossier-box">
+          <strong style="color:#e2e8f0; display:block; margin-bottom:3px;"><i class="fa-solid fa-lightbulb"></i> 面談の鉄則：</strong>
+          一見正論に見える指導、過剰な同情・安請け合い、病気の安易な決めつけはすべて地雷になります。冷静度が15%を下回るかリスクが85%を超えると<strong>面談決裂・途中退席</strong>となります。
+        </div>
+      </div>
+
+      <div style="font-size:10px; color:#64748b; text-align:center;">
+        全5ターンの対話後に診断決定を行います
+      </div>
+    </div>
+
+    <!-- 右：対話チャット -->
+    <div class="chat-panel">
+      <div id="chat-history" class="chat-history"></div>
+
+      <div class="choices-area">
+        <div class="choices-header">
+          <i class="fa-solid fa-hand-pointer"></i> あなたの発言・アプローチを選択してください（全4択）：
+        </div>
+        <div id="choices-container" style="display:flex; flex-direction:column; gap:7px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 2段階診断・意思決定画面 -->
+  <div id="diagnosis-screen" class="screen diagnosis-screen">
+    <div class="diag-box">
+      <div class="diag-title"><i class="fa-solid fa-clipboard-check"></i> 背景要因の特定と組織対応方針の決定</div>
+      <p id="diag-intro-text" style="font-size:12px; color:#cbd5e1; margin-bottom:12px;">
+        現場報告書と面談で明らかになった言動・身体兆候から、トラブルの主たる<strong>【4大背景要因】</strong>および<strong>【詳細な下位分類】</strong>を特定し、<strong>【今後の組織決定方針】</strong>を下してください。
+      </p>
+
+      <!-- Step 1: 大分類 -->
+      <div class="step-label">Step 1. 主たる「4大背景要因」を選択：</div>
+      <div class="factor-select-grid">
+        <div class="factor-card-option" onclick="selectPrimaryFactor('personality', this)">
+          <strong style="color:var(--amber); font-size:12px;">① 性格特性</strong>
+          <p style="font-size:10.5px; color:#94a3b8; margin-top:2px;">白黒思考・完璧主義・べき思考</p>
+        </div>
+        <div class="factor-card-option" onclick="selectPrimaryFactor('mental', this)">
+          <strong style="color:var(--teal); font-size:12px;">② メンタル不調</strong>
+          <p style="font-size:10.5px; color:#94a3b8; margin-top:2px;">うつ・双極性軽躁・被害妄想・強迫</p>
+        </div>
+        <div class="factor-card-option" onclick="selectPrimaryFactor('developmental', this)">
+          <strong style="color:var(--primary); font-size:12px;">③ 発達障害特性</strong>
+          <p style="font-size:10.5px; color:#94a3b8; margin-top:2px;">ASD（自閉系）・ADHD（注意欠如/多動）</p>
+        </div>
+        <div class="factor-card-option" onclick="selectPrimaryFactor('personality_disorder', this)">
+          <strong style="color:var(--purple); font-size:12px;">④ 人格障害</strong>
+          <p style="font-size:10.5px; color:#94a3b8; margin-top:2px;">境界性（BPD）・自己愛性（NPD）</p>
+        </div>
+      </div>
+
+      <!-- Step 2: 下位詳細分類（連動表示） -->
+      <div id="sub-factor-panel" class="sub-factor-container">
+        <div class="step-label" id="sub-factor-title">Step 2. 詳細な「下位分類（サブタイプ）」を選択：</div>
+        <div id="sub-factor-options" class="sub-factor-grid"></div>
+      </div>
+
+      <!-- Step 3: 対応方針 -->
+      <div class="step-label">Step 3. 組織として下す「対応決定方針」を選択：</div>
+      <div class="action-select-grid">
+        <label class="choice-btn">
+          <input type="radio" name="action-plan" value="plan_structure" style="margin-top:2px;">
+          <div>
+            <strong>【A. 業務構造化・加点法基準・環境調整プラン】</strong>
+            <div style="font-size:11px; color:#94a3b8;">指示の文字化・数値化、タスクのシングル化、および過敏刺激を遮断する席配置や客観チェックリストを導入。</div>
+          </div>
+        </label>
+        <label class="choice-btn">
+          <input type="radio" name="action-plan" value="plan_medical" style="margin-top:2px;">
+          <div>
+            <strong>【B. 産業医面談・受診勧奨・就業制限・休養プラン】</strong>
+            <div style="font-size:11px; color:#94a3b8;">本人の妄想や感情を否定せず、体調・睡眠の不調を主眼に産業医面談を設定し、必要に応じ休職療養へ。</div>
+          </div>
+        </label>
+        <label class="choice-btn">
+          <input type="radio" name="action-plan" value="plan_boundary" style="margin-top:2px;">
+          <div>
+            <strong>【C. 境界線設定・複数人チーム対応・ルール通達プラン】</strong>
+            <div style="font-size:11px; color:#94a3b8;">業務外連絡の厳禁を文書通達し、面談時間を固定。特定担当者の孤立を防ぐ複数人チームで冷静に境界線を引く。</div>
+          </div>
+        </label>
+        <label class="choice-btn">
+          <input type="radio" name="action-plan" value="plan_dismiss" style="margin-top:2px;">
+          <div>
+            <strong>【D. 即時解雇・直情的な職務剥奪プラン】</strong>
+            <div style="font-size:11px; color:#94a3b8;">「これ以上の迷惑は許されない」として、客観的記録や是正指導を経ずに即時解雇または無期限自宅待機を命じる。</div>
+          </div>
+        </label>
+      </div>
+
+      <div style="text-align:center;">
+        <button class="btn-act btn-act-pri" onclick="submitDiagnosis()">
+          <i class="fa-solid fa-chart-pie"></i> 最終診断を確定し結末を見る
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 最終結果・エンディング画面 -->
+  <div id="result-screen" class="screen result-screen">
+    <div>
+      <div id="res-rank-badge" class="result-rank-badge rank-s">🏆 結末ランク：S</div>
+      <h2 id="res-ending-title" class="res-ending-title">エンディングタイトル</h2>
+      <p id="res-ending-sub" class="res-ending-sub">結果サブタイトル</p>
+    </div>
+
+    <div class="result-metrics-grid">
+      <div class="res-metric-card">
+        <div class="res-metric-label">相手の最終冷静度</div>
+        <div id="stat-calm" class="res-metric-val">0%</div>
+      </div>
+      <div class="res-metric-card">
+        <div class="res-metric-label">組織トラブルリスク</div>
+        <div id="stat-risk" class="res-metric-val">0%</div>
+      </div>
+      <div class="res-metric-card">
+        <div class="res-metric-label">大分類判定</div>
+        <div id="stat-primary" class="res-metric-val">判定中</div>
+      </div>
+      <div class="res-metric-card">
+        <div class="res-metric-label">下位分類判定</div>
+        <div id="stat-sub" class="res-metric-val">判定中</div>
+      </div>
+    </div>
+
+    <!-- 詳細解説＆アドバイスカード群 -->
+    <div class="critique-container" id="res-advice-container">
+      <!-- 動的挿入 -->
+    </div>
+
+    <div class="btn-panel">
+      <button class="btn-act btn-act-sec" onclick="restartSameCase()"><i class="fa-solid fa-rotate-left"></i> このケースを再挑戦</button>
+      <button class="btn-act btn-act-pri" onclick="generateRandomCase()"><i class="fa-solid fa-dice"></i> 別のランダムケースへ挑戦</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 下位分類定義マスター ====================
+const SUB_FACTOR_DICT = {
+  personality: [
+    { key: 'p_blackwhite', name: '白黒思考・完璧主義（All-or-Nothing）', desc: '100点以外は無価値と捉え、ミスした他者を激しく攻撃・排斥する' },
+    { key: 'p_must', name: 'べき思考・過度の一般化（Must Thinking）', desc: '「社会人なら当然」という自論を絶対視し、周囲に押し付ける' },
+    { key: 'p_darktriad', name: 'ダークトライアド傾向（マキャヴェリズム等）', desc: '他者を自己の利益のために利用・搾取し、表面上は冷静を装う' }
+  ],
+  mental: [
+    { key: 'm_bipolar', name: '双極性障害（躁転・軽躁状態）', desc: '過剰な万能感、睡眠不要の多弁多動、衝動的行動と感情の激しい波' },
+    { key: 'm_delusion', name: '統合失調症・被害妄想（Delusional）', desc: '「監視されている」「悪口を言われている」という強い被害確信' },
+    { key: 'm_depression', name: 'うつ病・適応障害（Depression）', desc: '意欲低下、作業能力激減、睡眠・食欲不振、希死念慮' },
+    { key: 'm_ocd', name: '強迫性障害（OCD）', desc: '確認恐怖や儀式行為により出社・業務に深刻な遅延をきたす' }
+  ],
+  developmental: [
+    { key: 'd_asd', name: '自閉スペクトラム症 / ASD（アスペルガー）', desc: '言葉の文字通り受取、暗黙の了解・文脈把握の困難、こだわり' },
+    { key: 'd_adhd', name: '注意欠如・多動症 / ADHD', desc: '不注意・タスク失念・衝動的発言、マルチタスクでのフリーズ' },
+    { key: 'd_sld', name: '限局性学習症 / SLD', desc: '知能全般には問題ないが、計算や特定作業のみ著しく苦手' }
+  ],
+  personality_disorder: [
+    { key: 'pd_bpd', name: '境界性パーソナリティ障害（BPD）', desc: '見捨てられ不安、過度な依存から激しい攻撃への急変、試し行為' },
+    { key: 'pd_npd', name: '自己愛性パーソナリティ障害（NPD）', desc: '肥大化した特権意識、他者見下し、批判への激しい自己愛怒り' }
+  ]
+};
+
+// ==================== 全5ターン・完全4択・ラベルなしシナリオデータベース ====================
+const CASE_LIBRARY = {
+  // ① 性格特性：白黒思考・完璧主義
+  personality_bw: {
+    factorKey: 'personality',
+    subFactorKey: 'p_blackwhite',
+    factorName: '① 性格特性・認知の歪み（白黒思考・完璧主義）',
+    target: {
+      name: "高橋 亮平（34歳・営業企画グループ 主任）",
+      role: "勤続5年 / 中途入社 / 前職は大手コンサル / 個人営業成績は部署トップ",
+      avatar: "🧐",
+      incident: "後輩や同僚が提出した企画書に些細な誤字やフォーマット違いがあると、「社会人として完全に失格」「やる気がないなら辞めろ」と激しく罵倒し突き返す。さらに課長に対しても『課長の甘いマネジメントが部署を腐らせている』と全社役員・役職者CCで長文の批判メールを送信。企画業務の進行が完全にストップしている。",
+      voices: "「本人の言うことは正論なのですが、1ミリの妥協も許さず『100点以外は全部0点（無価値）』という態度なので、新人は萎縮して胃痛で休んでいます」「以前から完璧主義でしたが、ここ最近新しい大型プロジェクトのリーダーになってからさらに周囲への攻撃性が苛烈になっています。睡眠や食事は普通に取れているようですが……」"
+    },
+    initialState: { calm: 45, risk: 45, fact: 10 },
+    dialogueTree: {
+      turn1: {
+        npc: "（入室早々、厳しい表情で腕を組んで座る）課長、昨日の全社メールの件ですね。私は会社のために当然の指摘をしたまでです。誤字や数字のズレがある企画書をクライアントに出せますか？ 手を抜く同僚を放置して、品質を追求する私を呼び出すなんて、この会社の基準はどうなっているんですか！",
+        choices: [
+          {
+            key: "A",
+            text: "「高い品質基準と会社への強い責任感は理解しました。ただ、指摘を受けた後輩たちが萎縮して業務が滞っているのも事実です。なぜそこまで厳格な基準にこだわるのか、高橋さんのお考えを聞かせてください。」",
+            calmDelta: +15, riskDelta: -10, factDelta: +20,
+            reply: "（少し口元を結び、視線を外す）……基準を落としたら会社が負けるからです。ビジネスは0か100です。1つのミスがあれば、それまで積み上げた99の努力もすべて無価値になるんですよ。",
+            nextTurn: "turn2_neutral"
+          },
+          {
+            key: "B",
+            text: "「最近リーダー業務で過重なプレッシャーがかかっていませんか？ 睡眠や食欲は大丈夫ですか？ 疲れているなら産業医面談を受けて休みましょう。」",
+            calmDelta: -20, riskDelta: +25, factDelta: +5,
+            reply: "（不快そうに眉をひそめて激怒）……体調不良扱いで誤魔化さないでください！ 睡眠も食事も極めて健康です！ 問題は私の健康ではなく、周囲のプロ意識の欠如です！",
+            nextTurn: "turn2_bad"
+          },
+          {
+            key: "C",
+            text: "「高橋さんの指摘はごもっともです。同僚のミスは確かに甘い。ただ全社メールはやりすぎだから、今後は私に直接言ってくれませんか？」",
+            calmDelta: +10, riskDelta: +25, factDelta: +5,
+            reply: "（得意げに頷く）課長も正しさを認めてくれるんですね！ ならば今後、全社員の提出書類は私がすべて検閲し、ミスした者にはペナルティを課す権限をください！",
+            nextTurn: "turn2_trap"
+          },
+          {
+            key: "D",
+            text: "「正しいことを言えば何をしても許されるわけではありません。あなたの攻撃的な性格がチームを破壊しています。就業規則違反で処分しますよ。」",
+            calmDelta: -35, riskDelta: +40, factDelta: +5,
+            reply: "（顔を紅潮させて激怒）性格の問題にするんですか！？ 手抜きを容認して品質を落とせと命令するなら、会社のコンプライアンス違反として外部機関に通報します！",
+            nextTurn: "turn2_bad"
+          }
+        ]
+      },
+      turn2_neutral: {
+        npc: "妥協したら終わりなんです。新人の頃、誤字1つで見積もりを間違え、数千万円の大口契約を失注して先輩から『お前は会社のゴミだ』と罵倒された経験があります。あの恐怖が忘れられないんです。だからミスをする人間を見ると激しい怒りと焦りが湧き上がるんです。",
+        choices: [
+          {
+            key: "A",
+            text: "「過去の苦い経験が、品質への強い責任感の原動力になっていたんですね。一方で『1つのミスで全てがゼロ（無価値）になる』という捉え方は、チームでの育成においてどのような影響を与えていると思いますか？」",
+            calmDelta: +15, riskDelta: -15, factDelta: +25,
+            reply: "（ハッとした表情で沈黙する）……後輩たちが私の前で怯えているのは分かります。でも、甘やかしたら彼らもいつか同じ失敗をするのではと……。",
+            nextTurn: "turn3_good"
+          },
+          {
+            key: "B",
+            text: "「過去にそんな辛いトラウマがあったのですね。その恐怖は痛いほど分かります。もう自分を責めなくて大丈夫ですよ。」",
+            calmDelta: +10, riskDelta: +15, factDelta: +10,
+            reply: "同情されたいわけではありません。過去の反省を生かして完璧を求めているのに、なぜ会社は私を問題視するのかを聞いているんです。",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "C",
+            text: "「過去のトラウマを避けるため、後輩の書類を見なくて済むように高橋さんを1人プロジェクトの専任担当に隔離しましょうか？」",
+            calmDelta: -25, riskDelta: +30, factDelta: +5,
+            reply: "隔離ですか！？ 会社のエースである私を厄介払いして干す気ですね！ 絶対に許しません！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「過去のトラウマを後輩に八つ当たりするのは筋違いです。いい大人なんだから感情を切り替えなさい。」",
+            calmDelta: -30, riskDelta: +35, factDelta: +5,
+            reply: "八つ当たりではありません！ 私は後輩のためにプロの厳しさを教えているんです！ もう話になりません！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_trap: {
+        npc: "私が全書類を検閲すればミスはゼロになります。ミスをした社員への減給やペナルティ制度を今すぐ導入してください！",
+        choices: [
+          {
+            key: "A",
+            text: "「個人の裁量によるペナルティはパワハラになります。個人の性格ではなく、チーム全体の客観的なチェックリストと業務フローで品質基準を揃えましょう。」",
+            calmDelta: +10, riskDelta: -10, factDelta: +20,
+            reply: "……客観的な仕組みで品質が担保されるなら、そちらの方が合理的ですね。でも、具体的にどう線引きするんですか？",
+            nextTurn: "turn3_good"
+          },
+          {
+            key: "B",
+            text: "「よし、高橋さんに全権を任せるから、徹底的に引き締めてくれ。」",
+            calmDelta: +5, riskDelta: +40, factDelta: 0,
+            reply: "任せてください！ 手を抜く社員は徹底的に叩き直します！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「検閲なんて不可能です。後輩たちも頑張っているんだから大目に見てあげなさい。」",
+            calmDelta: -25, riskDelta: +30, factDelta: +5,
+            reply: "大目に見て損失を出したら課長が全責任を取れるんですか！？ 無責任すぎます！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「そんな独裁的な要求は就業規則違反です。直ちに要求を撤回しなさい。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "品質管理の提案を就業規則違反扱いするなら、労基署に通報します！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_bad: {
+        npc: "妥協を強要する会社には従えません！ 私を処分するなら労働基準監督署と弁護士に全社メールを提出してハラスメントを訴えます！",
+        choices: [
+          {
+            key: "A",
+            text: "「感情的な言い方になり申し訳ありませんでした。高橋さんの品質への熱意を否定するつもりはありません。業務基準をどう揃えるか冷静に話し合いませんか。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +15,
+            reply: "……冷静に話を聞いていただけるなら、私にも言い分があります。",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "B",
+            text: "「通報でも何でも勝手にしなさい！ 就業規則違反で処分されるのは命令違反の君の方だ！」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "絶対に許さない！ 裁判で徹底的に争いましょう！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「分かりました、私が悪かったです。全社メールの件は不問にするので許してください。」",
+            calmDelta: +5, riskDelta: +35, factDelta: 0,
+            reply: "当然です。今後私のやり方に一切口出ししないでください。",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「一旦頭を冷やすために、明日から有給休暇を取って実家に帰省しなさい。」",
+            calmDelta: -30, riskDelta: +35, factDelta: +5,
+            reply: "有給の強制取得ですか！？ 違法な出勤停止として訴状に追加します！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn3_good: {
+        npc: "『社会人ならこれくらい出来て当然だ』と思っていました。でも、私の基準が高すぎて、チーム全員が『どうせ怒られるから』と新しい提案をしなくなっている気もします……。どうすればいいんでしょうか。",
+        choices: [
+          {
+            key: "A",
+            text: "「『致命的なミス（赤信号）』と『後から修正可能な改善点（黄信号）』が言語化されていないため、高橋さんも後輩も常に100点満点のプレッシャーに晒されています。この2つを明確に区別する基準を作りませんか？」",
+            calmDelta: +20, riskDelta: -20, factDelta: +25,
+            reply: "（深く頷く）……確かに、誤字と金額ミスを同じ熱量で怒鳴っていたかもしれません。赤信号と黄信号の基準があるなら、私も冷静にジャッジできます。",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「まずは高橋さんがもっとリラックスして、後輩のミスを笑って許せる寛大さを持ちましょう。」",
+            calmDelta: -15, riskDelta: +15, factDelta: +5,
+            reply: "……精神論でミスを笑って許したら、クライアントへの信頼を失います。そういう曖昧な態度は納得できません。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "C",
+            text: "「認知の歪み（白黒思考）を治すために、心療内科で認知行動療法のカウンセリングを受けましょう。」",
+            calmDelta: -25, riskDelta: +25, factDelta: +10,
+            reply: "私の思考を精神病扱いするんですか！？ 業務の基準づくりの話をしているのに侮辱です！",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "D",
+            text: "「気づいているならなぜ今まで直さなかったのですか？ 後輩たちの受けた苦痛をどう償う気ですか？」",
+            calmDelta: -30, riskDelta: +30, factDelta: 0,
+            reply: "……私が悪いと決めつけて責め立てるなら、もう何も相談しません。",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn3_neutral: {
+        npc: "品質を担保したい私の思いと、萎縮してしまう職場の空気の板挟みで、正直私自身もイライラして疲れています。誰も私の基準を理解してくれない孤独感があります。",
+        choices: [
+          {
+            key: "A",
+            text: "「高橋さん1人に品質責任を背負わせてしまって申し訳ありませんでした。『減点法』ではなく、最低限のラインを決めた『加点法』での業務チェック体制へ移行しましょう。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +20,
+            reply: "……加点法ですか。最低限の基準を満たしていれば合格とし、そこからのプラスアルファを評価する仕組みなら、私も納得できます。",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「そのイライラが全社メールという暴発につながったんですね。今後は感情的になったら深呼吸するルールにしましょう。」",
+            calmDelta: -10, riskDelta: +10, factDelta: +10,
+            reply: "深呼吸で解決するなら苦労しません。問題の本質は業務ルールの曖昧さです。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "C",
+            text: "「孤独を感じるなら、今夜みんなで飲み会を開いて本音で語り合いましょう！」",
+            calmDelta: -15, riskDelta: +15, factDelta: +5,
+            reply: "飲み会でなあなあにする文化は大嫌いです。業務ルールの話をしてください。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "D",
+            text: "「イライラして周囲に当たるのはプロ失格です。自分の感情くらい自己管理しなさい。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "プロ意識がないのは周囲の方です！ 課長ともこれ以上話せません！",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn3_bad: {
+        npc: "会社が私を攻撃者として扱うなら、これ以上話すことはありません。弁護士同席でなければ今後の面談には応じません！",
+        choices: [
+          {
+            key: "A",
+            text: "「追い詰めるような言い方になり申し訳ありませんでした。高橋さんを責めるのではなく、部署の品質基準をどう仕組み化するかを相談したいのです。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +15,
+            reply: "……仕組みの改善について話せるなら、席に戻ります。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "B",
+            text: "「弁護士でも何でも呼びなさい。会社としての処分を粛々と進めます。」",
+            calmDelta: -35, riskDelta: +40, factDelta: 0,
+            reply: "望むところです。裁判で白黒つけましょう！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「弁護士沙汰だけは勘弁してください！ 私のボーナスを削ってでも何とかしますから！」",
+            calmDelta: 0, riskDelta: +45, factDelta: 0,
+            reply: "脅せば屈するんですね。では役員報酬のカットも要求します。",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「就業規則に基づき、本日付で自宅待機命令を発令します。荷物をまとめて退出してください。」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "不当な自宅待機だ！ 労働審判を即時申し立てます！",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn4_good: {
+        npc: "もし『赤信号（契約・金額・納期に関わる重大エラー）』と『黄信号（表現の改善点）』のチェックリストを明確にし、全社共通のフォーマットを整備できるなら、私も個人の感情で怒らずに済みます。でも、作成には時間がかかりますが……。",
+        choices: [
+          {
+            key: "A",
+            text: "「その基準作りこそ、高橋さんのコンサル経験と高い知見を最も活かせる分野です。課長である私と一緒に、来週からチェックリストの策定プロジェクトを主導してくれませんか？」",
+            calmDelta: +25, riskDelta: -25, factDelta: +25,
+            reply: "（表情が明るくなり前を向く）私にその役割を任せていただけるなら、ぜひやりたいです！ 感情論ではなく客観的ルールで後輩を導くマニュアルを作ります。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "B",
+            text: "「チェックリストを作る前に、まずは昨日の全社メールの件で役員と同僚全員に謝罪メールを送ってください。」",
+            calmDelta: -20, riskDelta: +25, factDelta: +5,
+            reply: "（頑なになり）謝罪ですか……？ 正論を言った私がなぜ謝罪しなければならないのか、納得がいきません。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "C",
+            text: "「作成に時間がかかるなら、外部のコンサル会社に外注して作ってもらいましょう。」",
+            calmDelta: -15, riskDelta: +15, factDelta: +10,
+            reply: "現場の業務を知らない外部に丸投げして意味があるんですか？ 現場を軽視しています。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "D",
+            text: "「高橋さんが1人で休日返上でチェックリストを全部完成させて提出してください。」",
+            calmDelta: -25, riskDelta: +25, factDelta: +5,
+            reply: "なぜ私1人に押し付けるんですか？ 組織としての改善意識が感じられません。",
+            nextTurn: "turn5_finish"
+          }
+        ]
+      },
+      turn4_neutral: {
+        npc: "私が厳しく指摘しなくなったら、後輩たちが手を抜いてクライアントに迷惑をかけるのではないかという不安がまだ残っています。",
+        choices: [
+          {
+            key: "A",
+            text: "「後輩の最終納品責任は課長である私が負います。高橋さんはチェックリストを用いた『客観的レビュー』に集中し、合否判定はチーム全体で行う体制にしましょう。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "……課長が最終責任を負ってくれるなら、私も肩の荷が下ります。その体制なら協力できます。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "B",
+            text: "「後輩を信じるのも先輩の仕事です。失敗しても成長の糧と思えませんか？」",
+            calmDelta: -10, riskDelta: +15, factDelta: +5,
+            reply: "綺麗事ですね。失敗のツケを払わされるのは会社です。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "C",
+            text: "「後輩がミスしたら、高橋さんの連帯責任として減給処分にします。」",
+            calmDelta: -35, riskDelta: +35, factDelta: 0,
+            reply: "理不尽極まりない！ なぜ私が他人のミスの責任を取らされるんですか！",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "D",
+            text: "「後輩の指導から高橋さんを完全に外しますので、今後は自分の個人営業だけやってください。」",
+            calmDelta: -20, riskDelta: +20, factDelta: +5,
+            reply: "結局、私の指導力を否定して切り捨てるわけですね。",
+            nextTurn: "turn5_finish"
+          }
+        ]
+      },
+      turn4_bad: {
+        npc: "もう何を言われても会社を信用できません。私の主張を認めるか、法廷で争うかのどちらかです。",
+        choices: [
+          {
+            key: "A",
+            text: "「これ以上の対話が平行線になるのはお互いに不幸です。高橋さんの高い能力を活かすための客観的基準作りを提案しています。どうか前向きに検討してください。」",
+            calmDelta: +10, riskDelta: -10, factDelta: +10,
+            reply: "……持ち帰って考えます。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "B",
+            text: "「では法廷でも労基署でもご自由にどうぞ。面談は以上です。」",
+            calmDelta: -30, riskDelta: +40, factDelta: 0,
+            reply: "後悔させてやります。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "C",
+            text: "「高橋さんの言う通りにします！ 全社メールで役員全員に謝罪させます！」",
+            calmDelta: 0, riskDelta: +50, factDelta: 0,
+            reply: "当然の判断です。明日中に全社謝罪文を出してください。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "D",
+            text: "「これ以上暴れるなら警察を呼びますよ！」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "呼べるものなら呼んでみろ！ 名誉毀損で訴えてやる！",
+            nextTurn: "turn5_finish"
+          }
+        ]
+      },
+      turn5_finish: {
+        npc: "今日の面談で、私が『完璧でなければ全否定される』という極端な思考にとらわれ、周囲を追い詰めていた構造は理解できました。最後に確認させてください。会社は私をどう評価し、今後どう処遇する方針なのですか？",
+        choices: [
+          {
+            key: "A",
+            text: "「高橋さんの高い業務遂行力と品質へのこだわりは会社の大きな強みです。今後は個人の性格指導ではなく、客観的な品質基準・チェックリストの設計リーダーとして活躍していただきます。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "（深く一礼する）ありがとうございます。全社メールの件は私の感情的暴走でした。関係者に謝罪し、今後は仕組みで品質を高める役割に全力を注ぎます。"
+          },
+          {
+            key: "B",
+            text: "「全社メールと後輩への暴言は就業規則違反ですので、相応の懲戒処分を下した上で、今後の態度を見て処遇を決めます。」",
+            calmDelta: -25, riskDelta: +30, factDelta: +10,
+            reply: "……結局、処罰ありきの面談だったのですね。分かりました、こちらも相応の法的対抗措置を取ります。"
+          },
+          {
+            key: "C",
+            text: "「高橋さんは優秀ですから、役員への昇格を推薦しておきますよ。」",
+            calmDelta: 0, riskDelta: +40, factDelta: 0,
+            reply: "口先だけのお世辞は見透かしています。信用できません。"
+          },
+          {
+            key: "D",
+            text: "「精神的なストレスが心配なので、明日から半年間の休職命令を出します。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "健康な私を休職に追い込む気ですか！？ 不当休職命令として提訴します！"
+          }
+        ]
+      }
+    }
+  },
+
+  // ② メンタル不調：双極性障害（躁転・軽躁状態）
+  mental_bipolar: {
+    factorKey: 'mental',
+    subFactorKey: 'm_bipolar',
+    factorName: '② メンタル不調・精神疾患（双極性障害の軽躁・感情の波）',
+    target: {
+      name: "斎藤 美樹（42歳・品質保証グループ リーダー）",
+      role: "勤続12年 / 温厚で周囲から信頼されていたベテラン / 半年前まで適応障害で2ヶ月休職",
+      avatar: "😨",
+      incident: "復職後は元気がなかったが、ここ2週間急激にハイテンションになり『部署の全員がチャットの裏グループで私の悪口を言い、PCにウイルスを仕掛けて監視している』と人事へ毎日血相を変えて直訴。深夜2時や3時にも早口の長文メールを連投し、出社すると机を叩いて同僚を怒鳴り散らしている。",
+      voices: "「以前の温厚な斎藤さんとは別人のようで怖いです。目つきが鋭く、ほとんど寝ていないらしく目の下に隈を作っています」「仕事のアイデアが次々湧くと言って、夜通し膨大な資料を作っては『全員これを暗記しろ』と配り歩いています」"
+    },
+    initialState: { calm: 30, risk: 65, fact: 10 },
+    dialogueTree: {
+      turn1: {
+        npc: "（落ち着きなく部屋を見回し、早口でまくし立てる）課長！ やっと呼んでくれましたね！ 部署のみんなが私を集団ストーカーしてるんです！ 私のスマホのGPSを追跡して、盗撮データをネットに流している犯人を今すぐ懲戒解雇してください！ 証拠ならこのノートに全部メモしてあります！（分厚いノートを叩きつける）",
+        choices: [
+          {
+            key: "A",
+            text: "「斎藤さん、そんな恐ろしいことが起きていると感じて、毎日強い不安と恐怖の中で戦っていたんですね。まずは座って、今のお体の調子や睡眠の様子も含めてゆっくり聴かせてください。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +20,
+            reply: "（少し呼吸を整えて座り直す）……私の恐怖を分かってくれますか？ 実はここ2週間、頭の中に電波やアイデアが溢れて止まらなくて、夜も1時間しか眠れず、心臓の動悸が止まらないんです……。",
+            nextTurn: "turn2_good"
+          },
+          {
+            key: "B",
+            text: "「新しい品質改善のアイデアが湧いているのは素晴らしいですね！ その分厚いノートの企画をぜひプロジェクトとして進めましょう！」",
+            calmDelta: +5, riskDelta: +35, factDelta: +5,
+            reply: "（目をギラギラさせて興奮）課長、分かってくれますか！ なら今夜徹夜して全社向けの100ページのマニュアルを書き上げます！ 全員に明日配ります！",
+            nextTurn: "turn2_trap"
+          },
+          {
+            key: "C",
+            text: "「斎藤さん、落ち着いてください。そんな集団ストーカーなんて現実にはあり得ませんよ。誰もあなたを攻撃していませんから安心しなさい。」",
+            calmDelta: -30, riskDelta: +35, factDelta: +5,
+            reply: "（激しく立ち上がり椅子を倒す）課長まで私を『狂人扱い』して隠蔽する気ですね！？ みんなグルなんだ！ もう誰も信じられません！",
+            nextTurn: "turn2_bad"
+          },
+          {
+            key: "D",
+            text: "「妄想が出るのは典型的な精神病の症状です。半年前の病気が悪化しています。今すぐ精神科に行って強い薬を打ってもらいなさい。」",
+            calmDelta: -35, riskDelta: +40, factDelta: +10,
+            reply: "病気決めつけですか！？ 私は会社のために命がけで働いているのに、精神病者扱いして追い出す気ですね！ 警察に行きます！",
+            nextTurn: "turn2_bad"
+          }
+        ]
+      },
+      turn2_good: {
+        npc: "眠らなくても全然疲れないんです！ 脳が覚醒して、会社の品質管理を10倍良くするアイデアが夜通し湧き出てくるんです！ でも、ふとした瞬間に胸が激しく痛んで『全員に命を狙われている』とパニックになって……私、どうかしちゃったんでしょうか……（急に涙ぐみ震え出す）。",
+        choices: [
+          {
+            key: "A",
+            text: "「眠らずに活動が止まらない万能感と、突然押し寄せる強い恐怖や動悸の波……斎藤さんの心と体が限界を超えてSOSを出しているサインです。主治医の先生には最近通院されていますか？」",
+            calmDelta: +20, riskDelta: -20, factDelta: +25,
+            reply: "（ポロポロと涙をこぼす）……先月『調子が良いから』と自分の判断で薬をやめてしまって、通院も行っていません……。止められない興奮と恐怖で本当はボロボロなんです……。",
+            nextTurn: "turn3_good"
+          },
+          {
+            key: "B",
+            text: "「仕事のアイデアが湧くのは素晴らしい回復の証拠ですよ！ 復職して調子が戻ってきたんですね。リーダーとしてバリバリ引っ張ってください。」",
+            calmDelta: +5, riskDelta: +35, factDelta: 0,
+            reply: "（急に笑顔になり早口で）ですよね！ では今夜中に全社向けの新しい品質マニュアルを100ページ書いて全員に配ります！",
+            nextTurn: "turn3_trap"
+          },
+          {
+            key: "C",
+            text: "「リーダーなんですから、感情の浮き沈みくらい気合でコントロールしてください。泣いたり騒いだりして周囲に迷惑です。」",
+            calmDelta: -30, riskDelta: +30, factDelta: +5,
+            reply: "コントロールできないから苦しんでいるんです！ 課長には人の心がありません！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「分かりました。命を狙われているなら、社内に監視カメラを増設して犯人を特定しましょう。」",
+            calmDelta: +5, riskDelta: +40, factDelta: 0,
+            reply: "そうです！ 早くカメラをつけて全員を取り調べてください！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_trap: {
+        npc: "今夜中に全社向けの資料を仕上げます！ 明日の朝礼で私が全社員にプレゼンする時間を1時間取ってください！",
+        choices: [
+          {
+            key: "A",
+            text: "「待ってください。今の斎藤さんの状態は、過剰な興奮によるオーバーヒートです。プレゼンは中止し、今すぐ業務を止めて休養に入りましょう。」",
+            calmDelta: +15, riskDelta: -15, factDelta: +20,
+            reply: "……止められると悔しいですが……確かに心臓がバクバクして倒れそうです……。",
+            nextTurn: "turn3_good"
+          },
+          {
+            key: "B",
+            text: "「素晴らしい意欲だ！ 明日の朝礼で発表してください！」",
+            calmDelta: +10, riskDelta: +50, factDelta: 0,
+            reply: "任せてください！ 会社を大改革してみせます！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「朝礼でのプレゼンは許可できません。勝手な行動は就業規則違反です。」",
+            calmDelta: -25, riskDelta: +30, factDelta: +5,
+            reply: "なぜ私の素晴らしい改革を邪魔するんですか！？ 会社の敵ですね！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「資料をチェックしたいので、明日の朝までに私の机に提出してください。」",
+            calmDelta: 0, riskDelta: +35, factDelta: 0,
+            reply: "徹夜で書いて提出します！ 期待していてください！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_bad: {
+        npc: "会社全体で私を精神病者に仕立て上げて抹殺しようとしている！ ネットに全社告発動画をアップして、警察と労基署に行きます！（震えながらスマホを取り出す）",
+        choices: [
+          {
+            key: "A",
+            text: "「斎藤さん、まずは深呼吸しましょう。あなたの安全と体調が一番心配です。事実調査と並行して、まずは産業保健スタッフに体の負担を診てもらいましょう。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +15,
+            reply: "……息が苦しくて……倒れそう……お医者さん呼んでください……。",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "B",
+            text: "「勝手に警察でも何でも行きなさい！ 業務妨害で懲戒処分にしますよ！」",
+            calmDelta: -45, riskDelta: +50, factDelta: 0,
+            reply: "人権侵害だ！ 会社を訴えてやる！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「スマホを没収します！ 勝手な撮影は社内規定違反です！」",
+            calmDelta: -40, riskDelta: +45, factDelta: 0,
+            reply: "強盗だ！ 助けて！ 警察を呼んで！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「分かりました、ネット動画の投稿を許可しますから落ち着いてください。」",
+            calmDelta: 0, riskDelta: +50, factDelta: 0,
+            reply: "今すぐ全世界に配信して会社の不正を暴きます！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn3_good: {
+        npc: "半年前のうつ状態の時は体が鉛のように重くて動けなかったのに、今は逆にエンジンが暴走してブレーキが壊れた車みたいなんです……。夜中に目が冴えて、同僚の些細な行動が全部自分への攻撃に見えてしまって……。",
+        choices: [
+          {
+            key: "A",
+            text: "「うつ状態から急激にハイテンション（軽躁）に転じるのは、双極性障害などでよく見られる症状です。決して斎藤さんの性格や意志の弱さではありません。脳のブレーキを休ませる医療的ケアが必要です。」",
+            calmDelta: +25, riskDelta: -25, factDelta: +25,
+            reply: "（ホッとしたように胸をなでおろす）……病気の症状だったんですね。私が狂って悪人になってしまったのかと怖くてたまらなかったんです……。",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「『同僚が攻撃している』という認知の歪みを直すために、客観的証拠をノートに書き出して自己分析しましょう。」",
+            calmDelta: -15, riskDelta: +20, factDelta: +10,
+            reply: "頭がグルグルして文字を書くのも苦しいんです……分析なんてできません……。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "C",
+            text: "「気合でブレーキを踏んでください。リーダーなんですから感情のコントロールくらいできないと困ります。」",
+            calmDelta: -30, riskDelta: +30, factDelta: 0,
+            reply: "コントロールできないから苦しんでいるんです！ 課長には人の心がありません！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「ブレーキが壊れているなら、明日から電話番だけやって定時で帰りましょう。」",
+            calmDelta: -15, riskDelta: +15, factDelta: +5,
+            reply: "電話番だけですか……？ 私はもう会社に要らない人間なんですね……。",
+            nextTurn: "turn4_neutral"
+          }
+        ]
+      },
+      turn3_trap: {
+        npc: "今夜中に全社向けの資料を仕上げます！ 明日の朝礼で私が全社員にプレゼンする時間を1時間取ってください！",
+        choices: [
+          {
+            key: "A",
+            text: "「待ってください。今の斎藤さんの状態は、過剰な興奮によるオーバーヒートです。プレゼンは中止し、今すぐ業務を止めて休養に入りましょう。」",
+            calmDelta: +10, riskDelta: -15, factDelta: +20,
+            reply: "……止められると悔しいですが……確かに心臓がバクバクして倒れそうです……。",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「素晴らしい意欲だ！ 明日の朝礼で発表してください！」",
+            calmDelta: +10, riskDelta: +50, factDelta: 0,
+            reply: "任せてください！ 会社を大改革してみせます！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「朝礼での発表は許可できません。勝手な行動は就業規則違反です。」",
+            calmDelta: -25, riskDelta: +30, factDelta: +5,
+            reply: "なぜ私の素晴らしい改革を邪魔するんですか！？ 会社の敵ですね！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「資料をチェックしたいので、明日の朝までに私の机に提出してください。」",
+            calmDelta: 0, riskDelta: +35, factDelta: 0,
+            reply: "徹夜で書いて提出します！ 期待していてください！",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn3_neutral: {
+        npc: "頭が割れるように痛くて、耳鳴りが止まりません……。でも、私が休んだら品質保証グループの検査が止まって会社に迷惑がかかってしまいます……。",
+        choices: [
+          {
+            key: "A",
+            text: "「業務の穴埋めは会社とチームの責任です。斎藤さんが1人で背負う必要は全くありません。今は何よりも斎藤さんの命と健康を守ることが最優先です。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "……会社に迷惑をかけてもいいんですか……？ 本当に休んでいいんですか……？",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「確かに検査が止まると困るので、午前中だけ出社して午後から休む形にしましょう。」",
+            calmDelta: -15, riskDelta: +20, factDelta: +5,
+            reply: "……無理して出社しなきゃいけないんですね……分かりました……。",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「頭痛薬を飲んで今日一日だけ乗り切ってください。」",
+            calmDelta: -25, riskDelta: +25, factDelta: 0,
+            reply: "薬を飲んでも治らないから苦しいんです……倒れそうです……。",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「検査が止まったら損害賠償問題になりますからね。気合を入れてください。」",
+            calmDelta: -35, riskDelta: +40, factDelta: 0,
+            reply: "もう無理です……死んでお詫びするしかありません……。",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn4_good: {
+        npc: "主治医の病院に行くのも怖かったんです。『薬を勝手にやめて悪化した』と叱られるんじゃないかと思って……。会社からも『使えない社員』として解雇されるのではないかと不安で……。",
+        choices: [
+          {
+            key: "A",
+            text: "「医師は叱るためではなく助けるためにいます。また、病気療養を理由に不当解雇されることは法律上絶対にありません。まずは明日、当社の産業医の先生と一緒に受診に向けた相談をしましょう。私が同席することも可能です。」",
+            calmDelta: +25, riskDelta: -25, factDelta: +20,
+            reply: "（涙を拭いて深く頷く）産業医の先生が一緒なら心強いです……。課長、病院に付き添っていただけますか……？",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "B",
+            text: "「病院に行かないと就業規則違反で解雇になりますよ。明日の朝一番で診断書をもらってきてください。」",
+            calmDelta: -25, riskDelta: +30, factDelta: +5,
+            reply: "（怯えた表情になり）解雇……やっぱり私を追い出す口実だったんですね……。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "C",
+            text: "「病院に行くのが怖いなら、市販の漢方薬とサプリメントで様子を見ましょう。」",
+            calmDelta: -10, riskDelta: +25, factDelta: 0,
+            reply: "サプリメントで治るんでしょうか……動悸が止まらないのですが……。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "D",
+            text: "「叱られるのが怖いなんて子供みたいなことを言わないでください。自己責任です。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "……もう誰も助けてくれないんですね。分かりました。",
+            nextTurn: "turn5_finish"
+          }
+        ]
+      },
+      turn5_finish: {
+        npc: "課長、話を聞いてくれてありがとうございました。興奮と恐怖で周囲に迷惑をかけていたことを深く反省しています。会社として、私にどのような対応を取る方針なのか教えていただけますか？",
+        choices: [
+          {
+            key: "A",
+            text: "「今日はこのまま業務を終了して早退し、明日は産業医面談を実施します。主治医の診断書に基づき、しっかりと休職療養に専念していただき、万全の状態で復職できるよう会社全体でバックアップします。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "（涙を流しながら安堵の表情を浮かべる）本当にありがとうございます……。産業医の先生にすべてお話しして、しっかり治療に専念します。"
+          },
+          {
+            key: "B",
+            text: "「周囲への暴言は重大な問題ですので、懲戒処分を下した上で、明日からの出勤停止を命じます。」",
+            calmDelta: -30, riskDelta: +35, factDelta: +5,
+            reply: "……病気で苦しんでいるのに処罰するんですね。弁護士に相談します。"
+          },
+          {
+            key: "C",
+            text: "「体調に配慮して、明日から倉庫の荷物運びの部署へ異動してもらいます。」",
+            calmDelta: -25, riskDelta: +25, factDelta: 0,
+            reply: "休養が必要なのに肉体労働ですか……？ 私を潰す気ですね。"
+          },
+          {
+            key: "D",
+            text: "「明日からも通常通りリーダー業務を続けてもらいます。頑張ってください。」",
+            calmDelta: -20, riskDelta: +30, factDelta: 0,
+            reply: "……休ませてくれないんですね。もう限界です……。"
+          }
+        ]
+      }
+    }
+  },
+
+  // ③ 発達障害特性：ASD（自閉スペクトラム症・文字通り受取）
+  developmental_asd: {
+    factorKey: 'developmental',
+    subFactorKey: 'd_asd',
+    factorName: '③ 発達障害特性（ASD・自閉スペクトラム症・暗黙の了解困難）',
+    target: {
+      name: "坂本 拓海（26歳・システム開発部 エンジニア）",
+      role: "勤続3年目 / 情報系大学院卒 / プログラミング単体のスキルは極めて優秀",
+      avatar: "🧐",
+      incident: "先輩から『クライアント向け資料の見栄えを適当に良くしといて』と言われ、全てのスライドに派手な3Dアニメーションや虹色グラデーションを施して大問題に。注意されると『指示通り工夫したのに理不尽だ。普通や常識の定義を言え』と反論。また口頭で複数のタスクを頼むと完全にフリーズして締め切りを失念する。",
+      voices: "「悪気は全くないようなのですが、言われた言葉の文字通りにしか解釈できません」「『手が空いたら手伝って』と言っても自分から動かず、定時になると周囲が繁忙期でもサッと帰宅するため、チーム内で『協調性ゼロのモンスターだ』と反感を買っています」"
+    },
+    initialState: { calm: 60, risk: 40, fact: 15 },
+    dialogueTree: {
+      turn1: {
+        npc: "課長、お呼びでしょうか。先日のプレゼン資料の件なら、私は先輩の『見栄えを良く工夫して』という指示を忠実に実行しました。それなのに叱責されるのは論理的に納得がいきません。『ビジネスの常識』などという曖昧な主観で怒られても、私には理解できません。",
+        choices: [
+          {
+            key: "A",
+            text: "「坂本さんは指示された言葉通りに全力で工夫してくれたんだね。ただビジネスでの『見栄え』とは『フォント統一・余白確保・図解の拡大』を指していたんだ。こちらの指示の定義が曖昧だったね。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +20,
+            reply: "（納得したように目を輝かせる）なるほど！『見栄え＝フォント統一と図解の拡大』だったのですね。最初からそう数値や具体例で指定していただければ、100%その通りに作成できました。",
+            nextTurn: "turn2_good"
+          },
+          {
+            key: "B",
+            text: "「叱責されて深く傷つき、ショックで鬱になっていませんか？ 過去の心のトラウマをゆっくり聴かせてください。」",
+            calmDelta: -15, riskDelta: +15, factDelta: +5,
+            reply: "（困惑した表情で首を傾げる）……トラウマの話ではありません。私は感情ではなく『指示の定義の曖昧さ』という論理的欠陥について話しています。",
+            nextTurn: "turn2_neutral"
+          },
+          {
+            key: "C",
+            text: "「社会人なら空気を読みなさい！ プレゼン資料に派手なアニメーションを入れないことくらい常識で分かるだろ！」",
+            calmDelta: -30, riskDelta: +35, factDelta: +5,
+            reply: "『空気を読む』とは具体的に何を指すのですか？ 定義が不明確な基準で責められる環境なら、これ以上働く意味がありません。",
+            nextTurn: "turn2_bad"
+          },
+          {
+            key: "D",
+            text: "「君はアスペルガーや発達障害の傾向があるんじゃないか？ 一度心療内科で検査を受けてきなさい。」",
+            calmDelta: -35, riskDelta: +40, factDelta: +10,
+            reply: "（不快感を露わにして）指示が下手なのを棚に上げて、部下に障害のレッテルを貼るのですか？ 人事部と労組に通報します。",
+            nextTurn: "turn2_bad"
+          }
+        ]
+      },
+      turn2_good: {
+        npc: "具体的な定義が分かれば問題ありません。でも、職場では『適当に』『よしなに』『手が空いたら手伝って』という曖昧な言葉ばかり使われます。『手が空いたら』と言われても、自分のタスクが完全にゼロになる瞬間はないので、手伝うべきタイミングが分からないんです。",
+        choices: [
+          {
+            key: "A",
+            text: "「暗黙の了解に頼っていたこちらの伝え方に課題がありましたね。今後は『○時〜○時までAさんのデータ入力を手伝う』と明確に業務指示として出すようにルール化します。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +25,
+            reply: "そう指示していただければ、迷わず100%の力で手伝えます！ 非常に合理的です。",
+            nextTurn: "turn3_good"
+          },
+          {
+            key: "B",
+            text: "「周りの様子を見れば忙しそうか分かるでしょう。周囲の表情や雰囲気を察して自分から動いてください。」",
+            calmDelta: -20, riskDelta: +20, factDelta: +5,
+            reply: "人の表情から業務の緊急度を推測するのは不可能です。なぜ『手伝ってほしい作業と納期』を直接言ってくれないのですか？",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "C",
+            text: "「人間関係のトラブルを防ぐため、坂本さんは他の同僚と一切口をきかないでください。」",
+            calmDelta: -25, riskDelta: +25, factDelta: +5,
+            reply: "業務連絡も禁止されるのですか？ それでは開発業務が完全に破綻します。",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「指示待ち人間は困ります。自発的に考えて動けないなら評価を下げますよ。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "明確な指示も出さずに評価を下げるのは不当評価です。人事部に申し立てます。",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_bad: {
+        npc: "曖昧な指示を出しておいて叱責される理不尽な環境には耐えられません。退職か配置転換を要求します。",
+        choices: [
+          {
+            key: "A",
+            text: "「感情的な物言いになってしまい申し訳ありませんでした。坂本さんの正確さや論理的思考力は高く評価しています。指示の出し方を改善したいので、困っている点を教えてくれませんか。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +15,
+            reply: "……改善していただけるなら、私の困りごとをお話しします。",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "B",
+            text: "「言い訳ばかりするならどこへ行っても通用しないぞ！」",
+            calmDelta: -35, riskDelta: +45, factDelta: 0,
+            reply: "もう何も話したくありません。労基署に相談します。",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「分かりました、退職届を受理しますので明日提出してください。」",
+            calmDelta: -30, riskDelta: +40, factDelta: 0,
+            reply: "自己都合退職の強要ですね。労働審判で争います。",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「とりあえず美味しいものでも食べて元気を出してください。」",
+            calmDelta: -15, riskDelta: +15, factDelta: 0,
+            reply: "論点のすり替えです。問題の解決になっていません。",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn3_good: {
+        npc: "実はもう一つ困っていることがあります。口頭で『これやって、あっちも確認して、後でこれも提出して』と早口で複数頼まれると、脳内が真っ白になってどの順番で手をつければいいか完全にフリーズしてしまうんです……。",
+        choices: [
+          {
+            key: "A",
+            text: "「耳から入る口頭情報よりも、目から入る文字情報の方が理解しやすい（視覚優位）特性ですね。今後は依頼時に『優先順位①・②・③』と『納期』をチャットで文字化して渡し、1つ完了したら次へ進めるシングルタスク形式にしましょう。」",
+            calmDelta: +25, riskDelta: -25, factDelta: +25,
+            reply: "（目を輝かせて）文字で優先順位と納期が指定されていれば、迷わずに圧倒的なスピードで完璧に完遂できます！ ぜひそうしてください！",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「メモを取って自分で優先順位を判断してください。社会人なんだからそれくらい自分で工夫できないと困ります。」",
+            calmDelta: -20, riskDelta: +20, factDelta: +5,
+            reply: "メモを取っても途中で状況が変わるとどれが優先か分からなくなるんです……私には無理です。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "C",
+            text: "「脳内がフリーズするのは過度のストレスです。3ヶ月休職して脳を休めましょう。」",
+            calmDelta: -20, riskDelta: +20, factDelta: +10,
+            reply: "体調は万全です。なぜ指示の出し方の問題なのに休職させられなければならないのですか？",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "D",
+            text: "「マルチタスクができないなら給与を2割カットします。」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "違法な減給です！ 弁護士を通じて会社に損害賠償を請求します！",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn3_neutral: {
+        npc: "オフィスの電話の着信音や周囲の雑談が気になって、集中が途切れてコードの記述ミスが増えることも悩みです。",
+        choices: [
+          {
+            key: "A",
+            text: "「感覚過敏への環境調整として、集中作業時はノイズキャンセリングイヤホンの着用を許可し、人の通りが少ない壁側の席へ配置換えしましょう。」",
+            calmDelta: +25, riskDelta: -20, factDelta: +20,
+            reply: "イヤホンを使っていいんですか！？ それなら雑音を遮断して120%の集中力を発揮できます！",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「オフィスなんだから雑音があるのは当たり前です。我慢して慣れてください。」",
+            calmDelta: -20, riskDelta: +20, factDelta: 0,
+            reply: "我慢して体調を崩しているんです。配慮のない会社ですね。",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「雑音が気になるなら、オフィスの電話回線をすべて撤去します。」",
+            calmDelta: 0, riskDelta: +30, factDelta: 0,
+            reply: "そんな極端なことをしたら会社全体の営業が止まってしまいます……。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "D",
+            text: "「集中できないのは気合が足りないからです。瞑想のセミナーに通いなさい。」",
+            calmDelta: -25, riskDelta: +25, factDelta: 0,
+            reply: "非科学的な精神論を押し付けないでください。",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn3_bad: {
+        npc: "私の能力を否定され、ただのトラブルメーカー扱いされるなら、この会社に私の居場所はありません。",
+        choices: [
+          {
+            key: "A",
+            text: "「能力を否定したつもりはありません。坂本さんの卓越したプログラミングスキルは部署の宝です。その才能を発揮できる環境を一緒に整えましょう。」",
+            calmDelta: +20, riskDelta: -15, factDelta: +15,
+            reply: "……環境を整えてくれるなら、もう少し頑張ってみます。",
+            nextTurn: "turn4_neutral"
+          },
+          {
+            key: "B",
+            text: "「居場所がないと思うなら転職を考えたらどうですか。」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "退職強要ですね。労働局にあっせんを申し立てます。",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「トラブルメーカーなのは事実です。同僚全員に土下座して謝罪しなさい。」",
+            calmDelta: -45, riskDelta: +50, factDelta: 0,
+            reply: "完全なパワハラ・強要罪です。刑事告訴します。",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「まあまあ、仲良くやりましょうよ。気にしない気にしない。」",
+            calmDelta: -15, riskDelta: +15, factDelta: 0,
+            reply: "真剣な話を茶化さないでください。",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn4_good: {
+        npc: "指示のテキスト化とシングルタスク化、ノイズ対策をしていただければ、ミスなく開発業務を完遂できる自信があります。ただ、急な仕様変更があった時に誰にどう相談すればいいか迷うことがあります。",
+        choices: [
+          {
+            key: "A",
+            text: "「坂本さんの指示窓口と相談役として、指導担当の先輩を専任キーパーソン（バディ）に指定します。仕様変更や判断に迷った時はその先輩にだけチャットで確認するルールにしましょう。」",
+            calmDelta: +25, riskDelta: -25, factDelta: +20,
+            reply: "相談相手が1人に決まっていれば、誰に聞くべきか迷わず安心して開発に没頭できます！",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "B",
+            text: "「その場の空気を読んで、近くにいる先輩の誰にでも適当に聞いてください。」",
+            calmDelta: -20, riskDelta: +25, factDelta: +5,
+            reply: "だから『適当に』『空気を読んで』と言われると誰に聞けばいいか分からないんです……。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "C",
+            text: "「迷ったらすべての開発作業を一旦中断し、役員会に直接報告してください。」",
+            calmDelta: -15, riskDelta: +20, factDelta: 0,
+            reply: "些細な仕様変更で役員会に報告するのは非効率すぎます。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "D",
+            text: "「仕様変更くらい自分で勝手に判断して進めなさい。」",
+            calmDelta: -25, riskDelta: +30, factDelta: 0,
+            reply: "勝手に判断して後で怒られるのは御免です。",
+            nextTurn: "turn5_finish"
+          }
+        ]
+      },
+      turn5_finish: {
+        npc: "今日の面談で、自分の特性と周囲とのズレが論理的に整理できました。会社として私をどのように業務配置し、サポートしてくれるのか決定方針を聞かせてください。",
+        choices: [
+          {
+            key: "A",
+            text: "「坂本さんの高度なプログラミング能力を活かすため、高度開発業務に特化させます。指示はすべてチャットで数値・納期を明文化し、シングルタスク化とバディ制、席の環境調整を正式に導入します。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "（嬉しそうに頷く）ありがとうございます！ 曖昧さのない明確な環境であれば、チーム最高水準の高品質なシステムを開発してみせます！"
+          },
+          {
+            key: "B",
+            text: "「協調性を養うため、今後は営業同行や電話応対など対人折衝の多い部署へ異動してもらいます。」",
+            calmDelta: -35, riskDelta: +40, factDelta: +5,
+            reply: "（絶望した表情で）私の強みを完全に殺す配置転換です。退職して競合他社へ移籍します。"
+          },
+          {
+            key: "C",
+            text: "「メンタルケアのため、週3日勤務のアルバイト契約へ変更します。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "不当な雇用形態の変更（不利益変更）です。弁護士に依頼します。"
+          },
+          {
+            key: "D",
+            text: "「これまで通り特に何も変えずに頑張ってください。」",
+            calmDelta: -20, riskDelta: +25, factDelta: 0,
+            reply: "何も改善してくれないなら、近いうちに必ず同じトラブルが起きますよ。"
+          }
+        ]
+      }
+    }
+  },
+
+  // ④ 人格障害：境界性パーソナリティ障害（BPD・依存と攻撃の反転）
+  personality_disorder_bpd: {
+    factorKey: 'personality_disorder',
+    subFactorKey: 'pd_bpd',
+    factorName: '④ パーソナリティ障害（境界性BPD・見捨てられ不安と試し行動）',
+    target: {
+      name: "水野 瑠璃（31歳・営業事務）",
+      role: "勤続1年 / 転職3社目（過去の職場でも人間関係トラブルで退職）",
+      avatar: "😠",
+      incident: "指導担当の先輩を当初『世界一素晴らしい上司！一生ついていきます』と絶賛していたが、書類の誤記を指摘された途端『パワハラでいじめられた』と態度が豹変。深夜23時に個人LINEを連投し、役員室へ『あの先輩を今すぐクビにしないと会社の前で死んでやる』と直訴して社内を大混乱させている。",
+      voices: "「気に入った人には過剰に甘えて依存し、少しでも思い通りにならないと『裏切られた』と激しい攻撃対象に変貌します」「周囲の社員に『先輩にいじめられている』と涙ながらに嘘を吹き込み、部署内を味方と敵に二分してギスギスさせています」"
+    },
+    initialState: { calm: 35, risk: 70, fact: 10 },
+    dialogueTree: {
+      turn1: {
+        npc: "（入室するなり涙ぐみながら強い口調で）課長！ 先輩に酷いいじめを受けています！ 私の努力を全否定してミスばかり責めてくるんです！ 課長だけは私の味方ですよね？ あの先輩を今すぐ懲戒処分にして異動させてください！ さもないと私、会社の前で死にます！",
+        choices: [
+          {
+            key: "A",
+            text: "「水野さんがそれほど追い詰められていたことは理解しました。ただ、夜間の個人連絡や誰かの処分を独断で行うことは職場のルール上できません。まずは今起きている具体的な業務上の事実をこの30分の面談で聞かせてください。」",
+            calmDelta: +15, riskDelta: -15, factDelta: +20,
+            reply: "（少し落ち着いて座り直す）……ルールって言われたらそうですけど……。実は佐藤先輩から渡される書類の修正が多くて、自分だけ意地悪されている気がして耐えられないんです。",
+            nextTurn: "turn2_good"
+          },
+          {
+            key: "B",
+            text: "「水野さんがそこまで苦しんでいたなんて気づかなくてごめんね。私が絶対に味方になるから、辛い時はいつでも夜中でも私に電話してね。」",
+            calmDelta: +15, riskDelta: +40, factDelta: +5,
+            reply: "（パッと笑顔になり涙を拭く）課長大好き！ やっぱり課長だけが本物の理解者です！ じゃあ今夜23時に私の悩み全部LINEしますから、全部読んでアドバイスくださいね！",
+            nextTurn: "turn2_trap"
+          },
+          {
+            key: "C",
+            text: "「いじめの感情はさておき、間違えた書類のフォントと数字のチェックリストを作ったので今すぐ直してください。」",
+            calmDelta: -25, riskDelta: +25, factDelta: +5,
+            reply: "（激怒して涙を流す）感情を無視して書類の話ですか！？ 私の命よりフォントが大事なんですか！？",
+            nextTurn: "turn2_bad"
+          },
+          {
+            key: "D",
+            text: "「深夜に連絡してくるあなたが非常識です。死ぬなどと言って脅すのは就業規則違反ですよ。甘えるのもいい加減にしなさい。」",
+            calmDelta: -35, riskDelta: +40, factDelta: +5,
+            reply: "（表情が一変して激怒し机を叩く）非常識！？ 会社が私を追いつめたんでしょうが！ 人事と労基署と文春に全部訴えて会社を潰してやる！",
+            nextTurn: "turn2_bad"
+          }
+        ]
+      },
+      turn2_good: {
+        npc: "先輩の指摘が細かすぎるんです。『フォントが違う』『数字の桁がズレてる』って……私の人格を全否定されているように感じます。最初はあんなに優しかったのに、急に冷たくなって裏切られたんです！ 課長もどうせ先輩の肩を持つんでしょ！？",
+        choices: [
+          {
+            key: "A",
+            text: "「私は先輩の味方でも、水野さんの味方でもありません。中立な立場で業務事実を確認しています。フォントや数字の確認は事務職としての共通ルールですが、先輩の伝え方に圧迫感があったかどうかを客観的に確認します。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +25,
+            reply: "（少し毒気が抜けたように）……中立なんですね。別に先輩をクビにしたいわけじゃないんです……ただ、私を認めてほしいだけで……。",
+            nextTurn: "turn3_good"
+          },
+          {
+            key: "B",
+            text: "「分かりました！ 先輩の指摘は完全にパワハラです。明日先輩を厳重注意して謝罪させます！」",
+            calmDelta: +10, riskDelta: +40, factDelta: +5,
+            reply: "（勝ち誇ったように）やった！ 課長、先輩を土下座させてくださいね！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「事務職ならフォントや数字を合わせるのは当然です。被害妄想を持たずに自分の能力不足を素直に認めなさい。」",
+            calmDelta: -30, riskDelta: +30, factDelta: +5,
+            reply: "能力不足！？ やっぱりみんなで私をいじめて追い出そうとしてるんだ！ 許せない！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「被害妄想がひどいので、明日の朝一番で精神科を受診して診断書を出してください。」",
+            calmDelta: -35, riskDelta: +35, factDelta: +5,
+            reply: "精神病扱いして私を追い出す気ですね！ 弁護士に連絡します！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_trap: {
+        npc: "もし先輩が来月までに異動しなかったら、課長も同罪ですからね！ ネットに全部暴露します！",
+        choices: [
+          {
+            key: "A",
+            text: "「私個人の独断で誰かを処分することはできません。会社として客観的事実に基づいてルール通り判断します。業務外の個人連絡も一切中止してください。」",
+            calmDelta: -10, riskDelta: -15, factDelta: +20,
+            reply: "……チッ、結局課長も私の味方じゃないんですね。でも事実確認なら立ち会わせてください。",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "B",
+            text: "「大丈夫、私が絶対に何とかするから安心していなさい。」",
+            calmDelta: 0, riskDelta: +50, factDelta: 0,
+            reply: "約束ですからね！ もし裏切ったらどうなるか分かってますよね！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「暴露するならこちらも名誉毀損で訴えますよ！」",
+            calmDelta: -35, riskDelta: +45, factDelta: 0,
+            reply: "脅迫だ！ 警察に通報します！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「先輩の異動は無理ですが、水野さんを私の秘書に昇格させます。」",
+            calmDelta: +5, riskDelta: +45, factDelta: 0,
+            reply: "課長の秘書ですか！ ずっとそばにいられますね！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn2_bad: {
+        npc: "もう課長とは話すことありません！ 本社役員と弁護士に連絡します！（ドアを蹴るようにして退出準備を始める）",
+        choices: [
+          {
+            key: "A",
+            text: "「感情的になって申し訳ありませんでした。一旦落ち着きましょう。事実関係を客観的に確認したいので記録を取らせてください。」",
+            calmDelta: +15, riskDelta: -15, factDelta: +15,
+            reply: "……記録取るなら最初からそう言ってくださいよ。",
+            nextTurn: "turn3_neutral"
+          },
+          {
+            key: "B",
+            text: "「勝手にしろ！ 処分されるのは君の方だ！」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "絶対に許さないから……！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "C",
+            text: "「待ってください！ 何でも言うことを聞きますから！」",
+            calmDelta: 0, riskDelta: +50, factDelta: 0,
+            reply: "なら今すぐ土下座して先輩をクビにしなさい！",
+            nextTurn: "turn3_bad"
+          },
+          {
+            key: "D",
+            text: "「ドアを蹴るのは器物損壊罪です。警察を呼びます。」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "警察上等！ 会社の前で暴れてやる！",
+            nextTurn: "turn3_bad"
+          }
+        ]
+      },
+      turn3_good: {
+        npc: "私、昔からそうなんです。誰かを信じて『この人は素晴らしい』と思うと過剰に尽くしてしまって、でも少しでも冷たくされると『裏切られた、殺される前に攻撃しなきゃ』ってパニックになって……。同僚たちにも先輩の悪口を言いふらしてしまいました……。",
+        choices: [
+          {
+            key: "A",
+            text: "「自分の感情のパターンに気づけたのは大きな一歩です。人への期待が高すぎることで、水野さん自身も激しい感情の波に苦しんできたのですね。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +25,
+            reply: "（涙を浮かべて静かに頷く）……そうなんです。相手を100点か0点かでしか見られなくて、いつも人間関係を破壊してしまうんです……。",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「同僚に悪口を言いふらしたのは名誉毀損です。今すぐ全員に謝罪文を配りなさい。」",
+            calmDelta: -25, riskDelta: +25, factDelta: +5,
+            reply: "謝罪文！？ 私は被害者なのに、加害者に仕立て上げる気ですね！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「私がこれから一生水野さんの面倒を見ますから、もう心配いりませんよ。」",
+            calmDelta: +10, riskDelta: +45, factDelta: 0,
+            reply: "課長……一生面倒見てくれるんですね！ 誓約書を書いてください！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「性格の悪さは一朝一夕には治りません。諦めて開き直りましょう。」",
+            calmDelta: -30, riskDelta: +30, factDelta: 0,
+            reply: "性格が悪いと言いましたね！？ 侮辱罪で訴えます！",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn3_neutral: {
+        npc: "先輩と2人きりで仕事をするのが怖いです。また何かミスを指摘されたら発狂してしまいそうで……。",
+        choices: [
+          {
+            key: "A",
+            text: "「特定の人との1対1のやり取りを避け、業務の依頼や確認はチーム共有のチャットで行い、複数人で確認する体制に切り替えましょう。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "2人きりでなくていいなら、とても安心します。",
+            nextTurn: "turn4_good"
+          },
+          {
+            key: "B",
+            text: "「逃げてばかりでは成長しません。先輩としっかり話し合って和解しなさい。」",
+            calmDelta: -20, riskDelta: +20, factDelta: 0,
+            reply: "和解なんて無理です！ 課長は現場の恐怖を分かっていません！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "C",
+            text: "「先輩を今日付で懲戒解雇にしますので安心してください。」",
+            calmDelta: +5, riskDelta: +45, factDelta: 0,
+            reply: "やったー！ 私の思い通りになりました！",
+            nextTurn: "turn4_bad"
+          },
+          {
+            key: "D",
+            text: "「水野さんが仕事を辞めればすべて解決しますよ。」",
+            calmDelta: -40, riskDelta: +50, factDelta: 0,
+            reply: "退職強要だ！ 会社を絶対に許さない！",
+            nextTurn: "turn4_bad"
+          }
+        ]
+      },
+      turn4_good: {
+        npc: "感情的にならずに仕事をするために、具体的にどうすればいいんでしょうか。また感情が暴走して夜中に電話してしまいそうで怖いです……。",
+        choices: [
+          {
+            key: "A",
+            text: "「以下の3つの境界線（ルール）を会社として設定します。①業務外の連絡は厳禁 ②面談は週1回30分に固定 ③業務確認はチェックリストを用い複数人で対応。この枠組みを守ることで、水野さんの感情の安全も守られます。」",
+            calmDelta: +25, riskDelta: -25, factDelta: +20,
+            reply: "（ほっとした表情で）……ルールで決めてもらった方が、私も相手を試したり依存せずに済みます。その枠組みなら守れます。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "B",
+            text: "「夜中に電話したくなったら、私の個人携帯にだけかけてきていいですよ。」",
+            calmDelta: +10, riskDelta: +45, factDelta: 0,
+            reply: "課長、ありがとうございます！ 毎晩かけますね！",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "C",
+            text: "「感情を抑えるために、夜中にスマホの電源を金庫に鍵をかけてしまいなさい。」",
+            calmDelta: -15, riskDelta: +15, factDelta: 0,
+            reply: "そこまで強制される筋合いはありません。",
+            nextTurn: "turn5_finish"
+          },
+          {
+            key: "D",
+            text: "「電話をかけたら即日解雇処分にします。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "脅迫して縛り付けるんですね……恐ろしい会社です。",
+            nextTurn: "turn5_finish"
+          }
+        ]
+      },
+      turn5_finish: {
+        npc: "面談の時間が終わりますね。最後に聞かせてください。私は今後、この職場でどのように扱われるのですか？",
+        choices: [
+          {
+            key: "A",
+            text: "「業務外連絡の禁止や面談時間の厳守といった『境界線ルール』を公式文書で確認した上で、1対1を排した複数人チーム体制で業務を継続していただきます。ルールを遵守し、安定して業務を遂行することを求めます。」",
+            calmDelta: +20, riskDelta: -20, factDelta: +20,
+            reply: "（背筋を伸ばして頷く）分かりました。特定の先輩に甘えたり攻撃したりせず、決められたルールとチェックリストに沿って冷静に仕事をします。"
+          },
+          {
+            key: "B",
+            text: "「水野さんの要求通り、指導担当の先輩を他部署へ懲戒異動させます。」",
+            calmDelta: +10, riskDelta: +50, factDelta: 0,
+            reply: "やったー！ 私の完全勝利ですね！ 次の先輩も私の言う通りにさせます！"
+          },
+          {
+            key: "C",
+            text: "「人間関係トラブルを起こす厄介者として、給与を減額して監視下に置きます。」",
+            calmDelta: -35, riskDelta: +40, factDelta: 0,
+            reply: "不当な差別待遇です！ 労働審判を起こします！"
+          },
+          {
+            key: "D",
+            text: "「どうせまたトラブルを起こすでしょうから、期待せずに見ています。」",
+            calmDelta: -30, riskDelta: +35, factDelta: 0,
+            reply: "……もう何も信用しません。"
+          }
+        ]
+      }
+    }
+  }
+};
+
+// ==================== ゲーム進行管理 ====================
+let currentCase = null;
+let currentTurn = 'turn1';
+let turnStep = 1;
+let selectedPrimaryFactor = null;
+let selectedSubFactor = null;
+let state = { calm: 50, risk: 50, fact: 10 };
+let isTerminatedEarly = false;
+
+function resetToHome() {
+  document.getElementById('intro-screen').style.display = 'flex';
+  document.getElementById('report-screen').style.display = 'none';
+  document.getElementById('dialogue-screen').style.display = 'none';
+  document.getElementById('diagnosis-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+}
+
+function generateRandomCase() {
+  const keys = Object.keys(CASE_LIBRARY);
+  const randomKey = keys[Math.floor(Math.random() * keys.length)];
+  loadCase(randomKey);
+}
+
+function loadCase(key) {
+  currentCase = CASE_LIBRARY[key];
+  state = { ...currentCase.initialState };
+  currentTurn = 'turn1';
+  turnStep = 1;
+  selectedPrimaryFactor = null;
+  selectedSubFactor = null;
+  isTerminatedEarly = false;
+
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('report-screen').style.display = 'block';
+  document.getElementById('dialogue-screen').style.display = 'none';
+  document.getElementById('diagnosis-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'none';
+
+  document.getElementById('rep-avatar').textContent = currentCase.target.avatar;
+  document.getElementById('rep-name').textContent = currentCase.target.name;
+  document.getElementById('rep-role').textContent = currentCase.target.role;
+  document.getElementById('rep-incident').textContent = currentCase.target.incident;
+  document.getElementById('rep-voices').textContent = currentCase.target.voices;
+}
+
+function startInterview() {
+  document.getElementById('report-screen').style.display = 'none';
+  document.getElementById('dialogue-screen').style.display = 'grid';
+
+  document.getElementById('side-avatar').textContent = currentCase.target.avatar;
+  document.getElementById('side-name').textContent = currentCase.target.name;
+  document.getElementById('turn-count').textContent = turnStep;
+
+  document.getElementById('chat-history').innerHTML = '';
+  addChatBubble('sys', `【1on1面談開始】${currentCase.target.name}が入室しました。（全5ターン）`);
+
+  updateGauges();
+  renderDialogue();
+}
+
+function updateGauges() {
+  state.calm = Math.max(0, Math.min(100, state.calm));
+  state.risk = Math.max(0, Math.min(100, state.risk));
+  state.fact = Math.max(0, Math.min(100, state.fact));
+
+  document.getElementById('val-calm').textContent = state.calm + '%';
+  document.getElementById('bar-calm').style.width = state.calm + '%';
+
+  document.getElementById('val-risk').textContent = state.risk + '%';
+  document.getElementById('bar-risk').style.width = state.risk + '%';
+
+  document.getElementById('val-fact').textContent = state.fact + '%';
+  document.getElementById('bar-fact').style.width = state.fact + '%';
+
+  document.getElementById('turn-count').textContent = turnStep;
+}
+
+function addChatBubble(type, text, speaker = "") {
+  const history = document.getElementById('chat-history');
+  const bubble = document.createElement('div');
+  bubble.className = `chat-bubble bubble-${type}`;
+
+  if (type === 'npc' && speaker) {
+    bubble.innerHTML = `<div class="speaker-tag">${speaker}</div><div>${text}</div>`;
+  } else if (type === 'player') {
+    bubble.innerHTML = `<div class="speaker-tag" style="color:#bfdbfe; text-align:right;">あなた（人事・面談担当者）</div><div>${text}</div>`;
+  } else {
+    bubble.textContent = text;
+  }
+
+  history.appendChild(bubble);
+  setTimeout(() => {
+    history.scrollTop = history.scrollHeight;
+  }, 50);
+}
+
+function renderDialogue() {
+  const node = currentCase.dialogueTree[currentTurn];
+  if (!node) {
+    goToDiagnosis();
+    return;
+  }
+
+  addChatBubble('npc', node.npc, currentCase.target.name);
+
+  const container = document.getElementById('choices-container');
+  container.innerHTML = '';
+
+  node.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-key">${choice.key}</span> <span>${choice.text}</span>`;
+    btn.onclick = () => handleChoice(choice);
+    container.appendChild(btn);
+  });
+
+  document.querySelector('.choices-area').scrollTop = 0;
+}
+
+function handleChoice(choice) {
+  addChatBubble('player', choice.text);
+
+  state.calm += choice.calmDelta;
+  state.risk += choice.riskDelta;
+  state.fact += choice.factDelta;
+  updateGauges();
+
+  document.getElementById('choices-container').innerHTML = '<div style="color:#94a3b8; font-size:12px; padding:8px;"><i class="fa-solid fa-spinner fa-spin"></i> 相手の反応と心理状態を分析中...</div>';
+
+  setTimeout(() => {
+    if (choice.reply) {
+      addChatBubble('npc', choice.reply, currentCase.target.name);
+    }
+    
+    // 途中決裂・途中退出判定（冷静度15%以下またはリスク85%以上）
+    if (state.calm <= 15 || state.risk >= 85) {
+      isTerminatedEarly = true;
+      setTimeout(() => {
+        addChatBubble('sys bubble-alert', `🚨【面談決裂・途中退席】${currentCase.target.name}は激怒して机を叩き、「もう話すことはありません！ 法廷で争いましょう！」と叫んで面談室を飛び出しました。`);
+        setTimeout(() => goToDiagnosis(true), 1500);
+      }, 600);
+      return;
+    }
+
+    turnStep++;
+    if (choice.nextTurn && currentCase.dialogueTree[choice.nextTurn]) {
+      currentTurn = choice.nextTurn;
+      setTimeout(() => renderDialogue(), 600);
+    } else {
+      setTimeout(() => goToDiagnosis(false), 900);
+    }
+  }, 600);
+}
+
+function goToDiagnosis(early = false) {
+  document.getElementById('dialogue-screen').style.display = 'none';
+  document.getElementById('diagnosis-screen').style.display = 'block';
+
+  const introText = document.getElementById('diag-intro-text');
+  if (early) {
+    introText.innerHTML = `<strong style="color:#f87171;"><i class="fa-solid fa-triangle-exclamation"></i> 面談は途中で決裂・強制終了しました。</strong><br>対話は不調に終わりましたが、ここまでの情報をもとに真の背景要因を特定し、組織として下す最終方針を決定してください。`;
+  } else {
+    introText.innerHTML = `現場報告書と5ターンの面談で明らかになった言動・身体兆候から、トラブルの主たる<strong>【4大背景要因】</strong>および<strong>【詳細な下位分類】</strong>を特定し、<strong>【今後の組織決定方針】</strong>を下してください。`;
+  }
+
+  selectedPrimaryFactor = null;
+  selectedSubFactor = null;
+  document.querySelectorAll('.factor-card-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('sub-factor-panel').style.display = 'none';
+  document.querySelectorAll('input[name="action-plan"]').forEach(el => el.checked = false);
+}
+
+// 大分類選択ハンドラ（連動して下位分類を表示）
+function selectPrimaryFactor(factorKey, element) {
+  selectedPrimaryFactor = factorKey;
+  selectedSubFactor = null;
+  document.querySelectorAll('.factor-card-option').forEach(el => el.classList.remove('selected'));
+  element.classList.add('selected');
+
+  const subPanel = document.getElementById('sub-factor-panel');
+  const subOptionsContainer = document.getElementById('sub-factor-options');
+  const subTitle = document.getElementById('sub-factor-title');
+
+  const subList = SUB_FACTOR_DICT[factorKey] || [];
+  subTitle.innerHTML = `Step 2. 「${getFactorName(factorKey)}」の詳細な下位分類を選択：`;
+
+  subOptionsContainer.innerHTML = '';
+  subList.forEach(item => {
+    const opt = document.createElement('div');
+    opt.className = 'sub-option-btn';
+    opt.innerHTML = `<strong>${item.name}</strong><div style="font-size:10.5px; color:#94a3b8; margin-top:2px;">${item.desc}</div>`;
+    opt.onclick = () => {
+      selectedSubFactor = item.key;
+      document.querySelectorAll('.sub-option-btn').forEach(b => b.classList.remove('selected'));
+      opt.classList.add('selected');
+    };
+    subOptionsContainer.appendChild(opt);
+  });
+
+  subPanel.style.display = 'block';
+}
+
+function submitDiagnosis() {
+  const selectedActionEl = document.querySelector('input[name="action-plan"]:checked');
+  if (!selectedPrimaryFactor) {
+    alert("Step 1 の「4大背景要因」を選択してください！");
+    return;
+  }
+  if (!selectedSubFactor) {
+    alert("Step 2 の「下位分類（サブタイプ）」を選択してください！");
+    return;
+  }
+  if (!selectedActionEl) {
+    alert("Step 3 の「対応決定方針」を選択してください！");
+    return;
+  }
+
+  const selectedAction = selectedActionEl.value;
+  calculateEnding(selectedPrimaryFactor, selectedSubFactor, selectedAction);
+}
+
+function calculateEnding(primaryFactor, subFactor, action) {
+  document.getElementById('diagnosis-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+
+  const isPrimaryCorrect = (primaryFactor === currentCase.factorKey);
+  const isSubCorrect = (subFactor === currentCase.subFactorKey);
+  
+  let endingRank = 'C';
+  let endingTitle = '';
+  let endingSub = '';
+
+  if (action === 'plan_dismiss') {
+    endingRank = 'C';
+    endingTitle = '【結末：即時解雇・違法処分による巨額敗訴】';
+    endingSub = '段階的な指導記録や是正手続を経ない拙速な解雇により、裁判で会社側が完全敗訴。';
+  } else if (isTerminatedEarly) {
+    endingRank = 'C';
+    endingTitle = '【結末：面談決裂・逆パワハラ告発と外部機関介入】';
+    endingSub = '対話中の不適切な対応により相手が途中で激昂・退席。信頼関係が完全に崩壊しました。';
+  } else if (isPrimaryCorrect && isSubCorrect) {
+    if (
+      (primaryFactor === 'personality' && action === 'plan_structure') ||
+      (primaryFactor === 'developmental' && action === 'plan_structure') ||
+      (primaryFactor === 'mental' && action === 'plan_medical') ||
+      (primaryFactor === 'personality_disorder' && action === 'plan_boundary')
+    ) {
+      if (state.risk <= 40 && state.calm >= 60) {
+        endingRank = 'S';
+        endingTitle = '【ハッピーエンド：最適合意・職場改善・定着】';
+        endingSub = '全5ターンの対話で下位詳細分類まで完全に見極め、特性に応じた仕組み化と連携でトラブルを完全解決！';
+      } else {
+        endingRank = 'A';
+        endingTitle = '【結末：職場のモチベーション低下・疲弊】';
+        endingSub = '詳細診断と方針は合致したものの、対話中の摩擦や安請け合いにより現場に不満が残る結果に。';
+      }
+    } else {
+      endingRank = 'B';
+      endingTitle = '【結末：対応施策ミスマッチによる退職・休職】';
+      endingSub = '要因・下位分類は特定できたが、アプローチ（施策）のミスマッチにより本人がパンクまたは周囲が離職。';
+    }
+  } else if (isPrimaryCorrect && !isSubCorrect) {
+    endingRank = 'B';
+    endingTitle = '【結末：下位病態の読み違いによる二次摩擦】';
+    endingSub = '大分類の方向性は合っていたものの、詳細な病態・特性の把握にズレがあり、対策が空回り。';
+  } else {
+    if (state.risk >= 65) {
+      endingRank = 'C';
+      endingTitle = '【結末：要因誤認による逆パワハラ泥沼紛争】';
+      endingSub = '根本要因を見誤った決めつけ指導により、相手が激昂・外部機関へ通報。';
+    } else {
+      endingRank = 'B';
+      endingTitle = '【結末：周囲の優秀な社員の連鎖離職】';
+      endingSub = '背景を誤認して本質的解決を先送りした結果、巻き込まれた同僚が耐えかねて退職。';
+    }
+  }
+
+  const badgeEl = document.getElementById('res-rank-badge');
+  badgeEl.className = `result-rank-badge rank-${endingRank.toLowerCase()}`;
+  badgeEl.innerHTML = (endingRank === 'S' ? '🏆' : (endingRank === 'A' ? '⚠️' : (endingRank === 'B' ? '🚪' : '🚨'))) + ` 結末ランク：${endingRank}`;
+
+  document.getElementById('res-ending-title').textContent = endingTitle;
+  document.getElementById('res-ending-sub').textContent = endingSub;
+  document.getElementById('stat-calm').textContent = state.calm + '%';
+  document.getElementById('stat-risk').textContent = state.risk + '%';
+  
+  const primaryEl = document.getElementById('stat-primary');
+  primaryEl.textContent = isPrimaryCorrect ? '正解 (◎)' : '不正解 (×)';
+  primaryEl.style.color = isPrimaryCorrect ? 'var(--success)' : 'var(--danger)';
+
+  const subEl = document.getElementById('stat-sub');
+  subEl.textContent = isSubCorrect ? '正解 (◎)' : '不正解 (×)';
+  subEl.style.color = isSubCorrect ? 'var(--success)' : 'var(--danger)';
+
+  renderDetailedAdvice(primaryFactor, subFactor, action, isPrimaryCorrect, isSubCorrect, endingRank);
+}
+
+function renderDetailedAdvice(primaryFactor, subFactor, action, isPrimaryCorrect, isSubCorrect, rank) {
+  const container = document.getElementById('res-advice-container');
+  container.innerHTML = '';
+
+  // 1. 診断・見極めの解説
+  const diagCard = document.createElement('div');
+  diagCard.className = 'advice-card adv-diag';
+  diagCard.innerHTML = `
+    <h5><i class="fa-solid fa-magnifying-glass-chart"></i> 1. 本事例の真因と見極め（鑑別）のポイント</h5>
+    <div>
+      ・<strong>正解の背景真因：</strong> <span style="color:#60a5fa; font-weight:700;">${currentCase.factorName}</span><br>
+      ・<strong>見極めの勘所：</strong> ${getCaseDiagnosticPoint(currentCase.subFactorKey)}<br>
+      ・<strong>なぜ他ケースのアプローチが裏目に出るのか：</strong> ${getMismatchWarning(currentCase.subFactorKey)}
+    </div>
+  `;
+  container.appendChild(diagCard);
+
+  // 2. 本人への個別支援アドバイス
+  const targetCard = document.createElement('div');
+  targetCard.className = 'advice-card adv-target';
+  targetCard.innerHTML = `
+    <h5><i class="fa-solid fa-user-check"></i> 2. 本人を活かす・守るための具体的マネジメント施策</h5>
+    <div>${getTargetSupportAdvice(currentCase.subFactorKey)}</div>
+  `;
+  container.appendChild(targetCard);
+
+  // 3. 組織・上司・周囲を守るための防衛ライン
+  const orgCard = document.createElement('div');
+  orgCard.className = 'advice-card adv-org';
+  orgCard.innerHTML = `
+    <h5><i class="fa-solid fa-shield-halved"></i> 3. 組織・上司・周囲の社員を守る防衛ラインとルール構築</h5>
+    <div>${getOrgDefenseAdvice(currentCase.factorKey)}</div>
+  `;
+  container.appendChild(orgCard);
+
+  // 4. 労務管理・法的手続きと専門機関連携
+  const lawCard = document.createElement('div');
+  lawCard.className = 'advice-card adv-law';
+  lawCard.innerHTML = `
+    <h5><i class="fa-solid fa-scale-balanced"></i> 4. 労務管理・産業保健連携の実践ステップ</h5>
+    <div>${getLegalProcedureAdvice(action, rank)}</div>
+  `;
+  container.appendChild(lawCard);
+}
+
+function getCaseDiagnosticPoint(subKey) {
+  const points = {
+    p_blackwhite: '「100点以外は全部0点（無価値）」「ミスした同僚は悪」という極端な認知の歪み。身体症状や睡眠障害はなく、高い論理能力と責任感の裏返しとして攻撃性が発現している点が見極めの鍵です。',
+    m_bipolar: 'うつ病休職からの復職後に急激にハイテンション（軽躁）化し、深夜メール連投や万能感、被害妄想、多弁・睡眠激減（1時間睡眠でも平気）が見られる典型的な躁転パターンです。',
+    d_asd: '「適当に」「見栄え良く」といった曖昧な文脈や暗黙のルールが理解できず、言葉を文字通り受け取って極端な行動を取る点。悪気や反抗心ではなく、視覚優位・シングルタスク特性に起因します。',
+    pd_bpd: '特定の上司を当初「最高の理解者」と過剰に理想化し、些細な注意で「裏切られた」と全否定・攻撃に急変（スプリッティング）。深夜連絡や自傷・自殺匂わせによる試し行動が顕著です。'
+  };
+  return points[subKey] || '本人の発言の前提にある恐怖、脳機能特性、精神症状を客観的に見極める必要があります。';
+}
+
+function getMismatchWarning(subKey) {
+  const warnings = {
+    p_blackwhite: '本ケースにメンタル不調の受診勧奨を行うと「病気扱いして誤魔化すな」と逆上し、感情の受容をすると「同情は不要」と反発します。客観的な合否基準の言語化のみが有効です。',
+    m_bipolar: '本ケースに業務の任用や意欲の評価を行うと、躁状態がさらに加速して全社を巻き込む大暴走（深夜プレゼン・暴言）を引き起こします。業務の即時制限と医療休養が唯一の正解です。',
+    d_asd: '本ケースに過去のトラウマへの心理的共感を行っても「共感ではなく数字と指示の定義を教えてほしい」とズレます。感情論を排した指示の数値化・テキスト化が必要です。',
+    pd_bpd: '本ケースに一般メンタルヘルスの全受容（いつでも電話してね）を行うと、救済者トラップに嵌まり深夜の個人連絡と試し行動が激化して共倒れします。厳格な境界線（枠組み）が必須です。'
+  };
+  return warnings[subKey] || '特性に合わない対応は二次トラブルを招きます。';
+}
+
+function getTargetSupportAdvice(subKey) {
+  const advice = {
+    p_blackwhite: '・<strong>加点法基準の導入：</strong> 「契約・金額に関わる重大エラー（赤信号）」と「後から修正可能な改善点（黄信号）」を明確に文書化。<br>・<strong>役割の再定義：</strong> 個人の性格指導ではなく、高い品質基準を活かした「客観的チェックリストの作成リーダー」として役割を付与する。',
+    m_bipolar: '・<strong>主治医・産業医との緊急連携：</strong> 勝手な断薬による躁転を防ぐため、受診同行や産業医意見書に基づく就業制限を実施。<br>・<strong>刺激の遮断：</strong> 軽躁状態での重要な意思決定や対外折衝を禁止し、速やかな休職療養へ繋ぐ。',
+    d_asd: '・<strong>指示の数値化・テキスト化：</strong> 「15時までにA4で3枚」と数字で指定し、チャットで優先順位（①②③）を明記。<br>・<strong>シングルタスク＆バディ制：</strong> 1作業ずつ完了させてから次を渡し、相談窓口を専任の先輩1名に固定。感覚過敏へのイヤホン着用を許可。',
+    pd_bpd: '・<strong>明確な境界線（枠組み）：</strong> 「業務外連絡の厳禁」「面談は週1回30分厳守」を公式文書で合意。<br>・<strong>1対1の排除：</strong> 指導や確認を複数人チーム体制（共有チャット）で行い、特定の社員への過剰な依存と攻撃を構造的に防ぐ。'
+  };
+  return advice[subKey] || '本人の認知特性に合わせた環境調整と指示の工夫が必要です。';
+}
+
+function getOrgDefenseAdvice(factorKey) {
+  const org = {
+    personality: '・<strong>感情論の排除：</strong> 「性格が悪い」と叱責せず、業務ルール・納品基準の客観的ガイドラインを部署全体に整備。<br>・<strong>後輩の心理的安全確保：</strong> 1on1面談で後輩の孤立を防ぎ、最終検収責任は管理職が負う体制を周知する。',
+    mental: '・<strong>安全配慮義務の履行：</strong> 異常な言動を放置せず、労働安全衛生法に基づく産業医面談・就業制限命令を速やかに発令。<br>・<strong>周囲社員の心のケア：</strong> 暴言や深夜連絡を受けた同僚の負担を軽減し、業務を分散させる。',
+    developmental: '・<strong>合理的配慮の標準化：</strong> 個人の特別扱いではなく、部署全体の業務マニュアル化・チェックリスト化を進め、組織全体の生産性を向上。<br>・<strong>ジョブコーチ活用：</strong> 障害者職業センター等の専門機関と連携し、現場担当者の指導負担を軽減。',
+    personality_disorder: '・<strong>チーム対応の徹底：</strong> 担当者を絶対に1人で孤立させない。上司・人事・産業医が情報を共有し、一貫した態度で接する。<br>・<strong>記録の厳重保管：</strong> 暴言、深夜連絡、事実無根のハラスメント主張の履歴を時系列で保存し、逆パワハラ告発に備える。'
+  };
+  return org[factorKey] || '組織としての防衛ラインを敷くことが重要です。';
+}
+
+function getLegalProcedureAdvice(action, rank) {
+  if (action === 'plan_dismiss') {
+    return '🚨 <strong>【重大な労務失敗（即時解雇の違法性）】</strong><br>労働契約法16条により、客観的合理性と社会的相当性を欠く解雇は無効となります。段階的な注意・指導記録、文書での業務命令、産業医連携などの「会社側の努力」を尽くさずに解雇すると、約1,500万〜2,000万円の賃金遡及支払（バックペイ）と復職命令が下ります。';
+  }
+  return '⚖️ <strong>【適法な労務管理の5段階ステップ】</strong><br>① 具体的行動に対する口頭注意（日時・事実を記録） → ② 文書による業務命令・改善指導書の交付 → ③ 改善なき場合の段階的懲戒処分（戒告・減給・出勤停止） → ④ 配転・環境調整の実施 → ⑤ 最終手段としての退職勧奨・弁護士連携。客観的証拠（エビデンス）の蓄積が最大の防御となります。';
+}
+
+function getFactorName(key) {
+  const map = {
+    personality: '① 性格特性・認知の歪み',
+    mental: '② メンタル不調・精神疾患',
+    developmental: '③ 発達障害特性',
+    personality_disorder: '④ 人格障害'
+  };
+  return map[key] || key;
+}
+
+function getSubFactorName(key) {
+  for (const group in SUB_FACTOR_DICT) {
+    const found = SUB_FACTOR_DICT[group].find(i => i.key === key);
+    if (found) return found.name;
+  }
+  return key;
+}
+
+function getActionName(key) {
+  const map = {
+    plan_structure: '業務構造化・環境調整プラン',
+    plan_medical: '産業医面談・受診勧奨・休養プラン',
+    plan_boundary: '境界線設定・複数人チーム対応プラン',
+    plan_dismiss: '即時解雇・職務剥奪'
+  };
+  return map[key] || key;
+}
+
+function restartSameCase() {
+  loadCase(currentCase.subFactorKey === 'p_blackwhite' ? 'personality_bw' : (currentCase.subFactorKey === 'm_bipolar' ? 'mental_bipolar' : (currentCase.subFactorKey === 'd_asd' ? 'developmental_asd' : 'personality_disorder_bpd')));
+}
+</script>
+
+</body>
+</html>
