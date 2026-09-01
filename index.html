@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>令和8年度 上小地区労働衛生大会 特設サイト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0076a8;          /* 爽やかなプロフェッショナルブルー */
+      --primary-dark: #004d73;     /* 濃い引き締めネイビー */
+      --accent: #00b4d8;           /* 明るいアクアブルー */
+      --accent-warm: #ff6b35;      /* 注目を引きつけるウォームアクセント */
+      --text-main: #2b3a4a;        /* 視認性の高いダークグレー */
+      --text-muted: #627282;       /* 補助テキスト */
+      --bg-light: #f8fafc;         /* クリーンな背景色 */
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --shadow-sm: 0 2px 8px rgba(0, 50, 100, 0.05);
+      --shadow-md: 0 10px 25px rgba(0, 50, 100, 0.08);
+      --shadow-lg: 0 14px 35px rgba(0, 50, 100, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.8;
+      color: var(--text-main);
+      background-color: var(--bg-light);
+      letter-spacing: 0.02em;
+    }
+
+    /* ナビバー（信頼感のある上部バー） */
+    .top-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-bar-org {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-bar-btn {
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: var(--primary);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .top-bar-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* ヒーローセクション（ファーストビュー） */
+    .hero {
+      background: linear-gradient(140deg, #f0f8ff 0%, #e6f4fb 50%, #d8effa 100%);
+      padding: 70px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid #ddecfa;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 6px 20px;
+      border-radius: 30px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+      border: 1px solid #cae6f7;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--primary-dark);
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-title {
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      line-height: 1.4;
+      max-width: 850px;
+      margin: 0 auto 20px;
+    }
+
+    .hero-title .highlight {
+      background: linear-gradient(transparent 65%, #c2ebff 65%);
+      padding: 0 4px;
+      color: #005c8a;
+    }
+
+    .hero-lead {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 680px;
+      margin: 0 auto 35px;
+    }
+
+    /* メインコンテンツ配置 */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 50px 20px 80px;
+    }
+
+    /* 登壇者紹介カード */
+    .speaker-section {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 35px 40px;
+      margin-bottom: 45px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid #edf2f7;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .speaker-icon-wrap {
+      flex-shrink: 0;
+      width: 90px;
+      height: 90px;
+      background: #f0f7fc;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #cae6f7;
+    }
+
+    .speaker-icon-svg {
+      width: 48px;
+      height: 48px;
+      fill: var(--primary);
+    }
+
+    .speaker-details .role-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: #e6f5fc;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .speaker-details .org-info {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .speaker-details .speaker-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-top: 2px;
+    }
+
+    /* セクションブロック共通 */
+    .section-head {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: inline-block;
+      position: relative;
+      padding-bottom: 12px;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* 資料ダウンロードカード群 */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 50px;
+    }
+
+    .resource-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      transition: all 0.25s ease;
+    }
+
+    .resource-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: #b0d7f2;
+    }
+
+    .resource-card.featured {
+      background: #fbfdff;
+      border-left: 6px solid var(--accent-warm);
+      border-color: #ffd8cc var(--border) var(--border) var(--accent-warm);
+    }
+
+    .resource-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      width: fit-content;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .badge-featured {
+      background: #fff0eb;
+      color: var(--accent-warm);
+    }
+
+    .badge-standard {
+      background: #eef4f9;
+      color: #55728d;
+    }
+
+    .resource-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: #ffffff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-download:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* お問い合わせバナー（テンプスタッフ風コンバージョンエリア） */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      border-radius: 20px;
+      padding: 50px 30px;
+      text-align: center;
+      color: #ffffff;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .cta-heading {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .cta-desc {
+      font-size: 0.95rem;
+      color: #dcecf7;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .btn-cta-main {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--primary-dark);
+      font-size: 1.15rem;
+      font-weight: 900;
+      padding: 18px 50px;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.25s ease;
+    }
+
+    .btn-cta-main:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      color: var(--primary);
+    }
+
+    /* フッター */
+    footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 1.65rem;
+      }
+      .speaker-section {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px 20px;
+      }
+      .resource-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .btn-download {
+        width: 100%;
+        justify-content: center;
+      }
+      .btn-cta-main {
+        width: 100%;
+        padding: 16px 20px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- トップバー -->
+  <header class="top-bar">
+    <div class="top-bar-org">長野産業保健総合支援センター</div>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqEzgwnNv2iwNabvtXmhXjmSvUZDgjELlcDinBtcZEGUtBfw/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" class="top-bar-btn">お問い合わせ</a>
+  </header>
+
+  <!-- ヒーローセクション -->
+  <section class="hero">
+    <span class="hero-tag">特設サイト</span>
+    <div class="hero-sub">令和8年度 上小地区労働衛生大会</div>
+    <h1 class="hero-title">ストレスチェック結果を活用した<br><span class="highlight">「快適職場」</span>づくり</h1>
+    <p class="hero-lead">
+      本大会の講演資料および、事業場における職場環境改善とメンタルヘルス対策を推進するための公式マニュアルをご提供しています。
+    </p>
+  </section>
+
+  <!-- メインコンテンツ -->
+  <main class="container">
+
+    <!-- 登壇者情報 -->
+    <div class="speaker-section">
+      <div class="speaker-icon-wrap">
+        <svg class="speaker-icon-svg" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      </div>
+      <div class="speaker-details">
+        <span class="role-badge">講師 / 登壇機関</span>
+        <div class="org-info">独立行政法人 労働者健康安全機構 長野産業保健総合支援センター</div>
+        <div class="speaker-name">髙橋 知也</div>
+      </div>
+    </div>
+
+    <!-- 資料ダウンロードセクション -->
+    <section>
+      <div class="section-head">
+        <h2 class="section-title">資料ダウンロード</h2>
+      </div>
+
+      <div class="resource-grid">
+        <!-- 完全版資料 -->
+        <div class="resource-card featured">
+          <div class="resource-title-wrap">
+            <span class="badge-pill badge-featured">本大会 配布資料</span>
+            <div class="resource-title">今回の資料完全版</div>
+          </div>
+          <a href="#" class="btn-download" onclick="alert('ダウンロードリンクは準備中です。'); return false;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            PDFをダウンロード
+          </a>
+        </div>
+
+        <!-- 厚労省/公式マニュアル群 -->
+        <div class="resource-card">
+          <div class="resource-title-wrap">
+            <span class="badge-pill badge-standard">公式手引</span>
+            <div class="resource-title">労働安全衛生法に基づく ストレスチェック制度実施マニュアル</div>
+          </div>
+          <a href="#" class="btn-download" onclick="alert('ダウンロードリンクは準備中です。'); return false;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            PDFをダウンロード
+          </a>
+        </div>
+
+        <div class="resource-card">
+          <div class="resource-title-wrap">
+            <span class="badge-pill badge-standard">公式手引</span>
+            <div class="resource-title">小規模事業場ストレスチェック制度実施マニュアル</div>
+          </div>
+          <a href="#" class="btn-download" onclick="alert('ダウンロードリンクは準備中です。'); return false;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            PDFをダウンロード
+          </a>
+        </div>
+
+        <div class="resource-card">
+          <div class="resource-title-wrap">
+            <span class="badge-pill badge-standard">公式手引</span>
+            <div class="resource-title">これからはじめる職場環境改善～スタートのための手引～</div>
+          </div>
+          <a href="#" class="btn-download" onclick="alert('ダウンロードリンクは準備中です。'); return false;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            PDFをダウンロード
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- お問い合わせ（CTAエリア） -->
+    <section class="cta-banner">
+      <h2 class="cta-heading">講演内容・職場環境改善に関するお問い合わせ</h2>
+      <p class="cta-desc">
+        ストレスチェックの集団分析結果の活用法や、快適な職場づくりに向けた取り組みについてのご相談は、下記フォームよりお気軽にご連絡ください。
+      </p>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqEzgwnNv2iwNabvtXmhXjmSvUZDgjELlcDinBtcZEGUtBfw/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" class="btn-cta-main">
+        お問い合わせフォームはこちら
+      </a>
+    </section>
+
+  </main>
+
+  <!-- フッター -->
+  <footer>
+    <p>&copy; 令和8年度 上小地区労働衛生大会 / 長野産業保健総合支援センター</p>
+  </footer>
+
+</body>
+</html>
