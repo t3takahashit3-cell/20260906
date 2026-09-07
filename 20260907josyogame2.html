@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ストレスチェック集団分析活用・経営改善提案ジェネレーター</title>
+  <style>
+    :root {
+      --primary: #0f172a;       /* エグゼクティブ・ネイビー */
+      --accent: #0284c7;        /* ビジネス・ブルー */
+      --success: #15803d;       /* 成果・グリーン */
+      --danger: #b91c1c;        /* リスク・レッド */
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --border: #cbd5e1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+    body { background-color: #f8fafc; color: #0f172a; line-height: 1.6; padding: 24px 12px; }
+    .container { max-width: 1040px; margin: 0 auto; background: #ffffff; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 40px 32px; }
+
+    /* ヘッダー */
+    header { border-bottom: 2px solid var(--primary); padding-bottom: 16px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-end; }
+    h1 { font-size: 1.5rem; color: var(--primary); font-weight: 800; letter-spacing: -0.02em; }
+    .doc-meta { font-size: 0.8rem; color: var(--slate-600); text-align: right; }
+
+    /* プログレス */
+    .flow-bar { display: flex; justify-content: space-between; position: relative; margin-bottom: 36px; }
+    .flow-bar::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--slate-200); z-index: 1; transform: translateY(-50%); }
+    .flow-step { position: relative; z-index: 2; width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: var(--slate-600); }
+    .flow-step.active { border-color: var(--accent); background: var(--accent); color: white; }
+    .flow-step.completed { border-color: var(--primary); background: var(--primary); color: white; }
+
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+    h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; border-left: 5px solid var(--accent); padding-left: 12px; }
+    .step-lead { font-size: 0.88rem; color: var(--slate-600); margin-bottom: 24px; }
+
+    /* Step 1: 判定図と経営リスクの選択 */
+    .risk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .risk-card { border: 2px solid var(--border); border-radius: 8px; padding: 20px; cursor: pointer; transition: all 0.2s; background: #ffffff; }
+    .risk-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .risk-card.selected { border-color: var(--accent); background: #f0f9ff; }
+    .risk-tag { font-size: 0.75rem; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; display: block; }
+    .risk-title { font-size: 1.05rem; font-weight: bold; margin-bottom: 8px; color: var(--primary); }
+    .risk-kpi { font-size: 0.8rem; background: #fff1f2; color: var(--danger); padding: 6px 10px; border-radius: 4px; font-weight: bold; margin-bottom: 8px; }
+    .risk-desc { font-size: 0.82rem; color: var(--slate-600); }
+
+    /* Step 2: 解決策カード */
+    .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .action-card { border: 1px solid var(--border); border-radius: 8px; padding: 18px; cursor: pointer; transition: all 0.2s; background: white; display: flex; flex-direction: column; justify-content: space-between; }
+    .action-card:hover { border-color: var(--accent); }
+    .action-card.selected { border: 2px solid var(--accent); background: #f0f9ff; }
+    .meta-badges { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    .b-domain { background: var(--slate-100); color: var(--slate-600); }
+    .b-cost { background: #dcfce7; color: #166534; }
+    .b-roi { background: #e0e7ff; color: #3730a3; }
+
+    /* Step 3: ロードマップ編成 */
+    .slot-container { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+    .phase-slot { border: 2px dashed var(--border); border-radius: 8px; padding: 16px; background: #fafafa; }
+    .phase-slot.filled { border-style: solid; border-color: var(--accent); background: #f0f9ff; }
+    .slot-phase-title { font-size: 0.85rem; font-weight: bold; color: var(--accent); margin-bottom: 4px; }
+
+    /* Step 4: 経営プレゼン資料（A4レポート風デザイン） */
+    .exec-doc { border: 1px solid #94a3b8; border-radius: 4px; padding: 36px; background: #ffffff; color: #0f172a; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
+    .exec-header { border-bottom: 3px double var(--primary); padding-bottom: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .doc-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.01em; }
+    
+    .exec-section { margin-bottom: 24px; }
+    .sec-h3 { font-size: 0.95rem; font-weight: 800; background: var(--primary); color: white; padding: 4px 10px; display: inline-block; margin-bottom: 10px; }
+    
+    .exec-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 0.85rem; }
+    .exec-table th, .exec-table td { border: 1px solid var(--border); padding: 10px 12px; }
+    .exec-table th { background: var(--slate-100); font-weight: 700; width: 22%; text-align: left; }
+    
+    .kpi-board { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .kpi-card { border: 1px solid var(--border); border-radius: 6px; padding: 12px; background: #f8fafc; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; color: var(--danger); margin-top: 4px; }
+    .kpi-val.good { color: var(--success); }
+
+    .btn-row { display: flex; justify-content: space-between; margin-top: 28px; }
+    button.btn { padding: 10px 24px; border-radius: 4px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-secondary { background: var(--slate-200); color: var(--slate-600); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; max-width: 100%; padding: 0; }
+      header, .flow-bar, .btn-row, .step-lead, .step-content:not(#step-4) { display: none !important; }
+      #step-4 { display: block !important; }
+      .exec-doc { border: none; padding: 0; }
+      .sec-h3 { background: #000 !important; color: #fff !important; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>職場環境改善・経営投資提案システム</h1>
+      <p style="font-size:0.82rem; color:var(--slate-600);">ストレスチェック集団分析（判定図）結果に基づく経営直結型カイゼン・コンパス</p>
+    </div>
+    <div class="doc-meta">
+      社内決裁・安全衛生委員会提出用<br>
+      準拠：厚労省メンタルヘルスアクションチェックリスト30
+    </div>
+  </header>
+
+  <div class="flow-bar">
+    <div class="flow-step active" id="f-1">1</div>
+    <div class="flow-step" id="f-2">2</div>
+    <div class="flow-step" id="f-3">3</div>
+    <div class="flow-step" id="f-4">4</div>
+  </div>
+
+  <!-- STEP 1: 経営リスクの特定 -->
+  <div class="step-content active" id="step-1">
+    <h2>ステップ 1: 集団分析結果から「経営リスク領域」を特定する</h2>
+    <p class="step-lead">集団分析の判定図で全国平均を超えている領域、または現場で顕在化している最大のリスクを選択してください。</p>
+
+    <div class="risk-grid">
+      <div class="risk-card" onclick="selectRisk('workload', this)">
+        <span class="risk-tag">判定図：量的負担過大</span>
+        <div class="risk-title">長時間残業・業務偏重</div>
+        <div class="risk-kpi">潜在リスク：突然休職・労基署是正勧告・退職代行利用</div>
+        <div class="risk-desc">特定キーマンへの負荷集中、恒常的残業による睡眠不足とミス誘発。</div>
+      </div>
+      <div class="risk-card" onclick="selectRisk('control', this)">
+        <span class="risk-tag">判定図：コントロール低下</span>
+        <div class="risk-title">受動的業務・裁量権の欠如</div>
+        <div class="risk-kpi">潜在リスク：若手・優秀層の流出・組織の硬直化</div>
+        <div class="risk-desc">手順や計画を自分で決められず、指示待ち・やらされ感によるエンゲージメント急減。</div>
+      </div>
+      <div class="risk-card" onclick="selectRisk('support_mgr', this)">
+        <span class="risk-tag">判定図：上司の支援不足</span>
+        <div class="risk-title">報連相ライン不全・評価不満</div>
+        <div class="risk-kpi">潜在リスク：パワハラ相談急増・重大トラブル隠蔽</div>
+        <div class="risk-desc">心理的安全性の欠如によりトラブルが直前まで上がらず、問題が巨大化して発覚する。</div>
+      </div>
+      <div class="risk-card" onclick="selectRisk('support_peer', this)">
+        <span class="risk-tag">判定図：同僚の支援不足</span>
+        <div class="risk-title">セクショナリズム・孤立</div>
+        <div class="risk-kpi">潜在リスク：手戻り多発による生産性低下・離職連鎖</div>
+        <div class="risk-desc">隣の席の状況が分からず助け合いがない。中途社員や若手が孤立して早期離職。</div>
+      </div>
+      <div class="risk-card" onclick="selectRisk('environment', this)">
+        <span class="risk-tag">判定図：作業手順・環境不良</span>
+        <div class="risk-title">非効率な導線・手戻り・ミス</div>
+        <div class="risk-kpi">潜在リスク：労災事故・クレーム増大・隠れ残業</div>
+        <div class="risk-desc">探す・運ぶ手間、指示書の不明瞭さによる手戻りで、本質的業務の時間が圧迫されている。</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button class="btn btn-primary" id="btn-to-2" disabled onclick="goStep(2)">解決策の選定へ進む ➜</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 解決策（30項目）の選定 -->
+  <div class="step-content" id="step-2">
+    <h2>ステップ 2: 経営課題を是正する施策の選定（3項目）</h2>
+    <p class="step-lead">抽出された推奨アクションから、経営陣へ提案する**「3つの改善の柱」**を選択してください。（選択中: <span id="pick-count">0</span>/3）</p>
+
+    <div class="action-grid" id="action-grid-box"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">⬅ 課題選択に戻る</button>
+      <button class="btn btn-primary" id="btn-to-3" disabled onclick="goStep(3)">ロードマップ編成へ進む ➜</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: ロードマップと推進体制の設定 -->
+  <div class="step-content" id="step-3">
+    <h2>ステップ 3: 段階的導入計画（フェーズ分け）とKPI設定</h2>
+    <p class="step-lead">経営陣が最も嫌うのは「最初から多額のコストをかけ、効果が出ないこと」です。施策を段階的に配置します。</p>
+
+    <div class="slot-container">
+      <div class="phase-slot" id="slot-0">
+        <div class="slot-phase-title">【フェーズ1：即時実行】明日〜1ヶ月（投資ゼロ・現場ルール変更でクイックウィン）</div>
+        <div id="slot-text-0" style="font-size:0.85rem; color:#64748b;">ステップ2で選んだ項目から自動配置されます</div>
+      </div>
+      <div class="phase-slot" id="slot-1">
+        <div class="slot-phase-title">【フェーズ2：定着・習慣化】1ヶ月〜3ヶ月（運用フォーマット策定・部署内定着）</div>
+        <div id="slot-text-1" style="font-size:0.85rem; color:#64748b;">ステップ2で選んだ項目から自動配置されます</div>
+      </div>
+      <div class="phase-slot" id="slot-2">
+        <div class="slot-phase-title">【フェーズ3：仕組み・制度化】3ヶ月〜半年（全社展開・人事評価や設備への反映）</div>
+        <div id="slot-text-2" style="font-size:0.85rem; color:#64748b;">ステップ2で選んだ項目から自動配置されます</div>
+      </div>
+    </div>
+
+    <div style="background:#fff; border:1px solid var(--border); border-radius:6px; padding:18px; margin-bottom:20px;">
+      <h3 style="font-size:0.9rem; font-weight:bold; margin-bottom:10px; color:var(--primary);">📊 経営承認を取り付けるためのパラメータ設定</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:bold; display:block; margin-bottom:4px;">対象部署の概算人数（人）</label>
+          <input type="number" id="param-headcount" value="20" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; font-size:0.85rem;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:bold; display:block; margin-bottom:4px;">提案プロジェクト名（決裁書の件名）</label>
+          <input type="text" id="param-projname" value="生産性向上および離職防止に向けた快適職場環境改善計画" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:4px; font-size:0.85rem;">
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">⬅ 施策選択に戻る</button>
+      <button class="btn btn-accent" onclick="goStep(4)">経営プレゼン稟議書を生成する ➜</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: 経営プレゼン資料出力（A4決裁書仕様） -->
+  <div class="step-content" id="step-4">
+    <h2>ステップ 4: 経営会議・役員向け 改善提案ワンシート</h2>
+    <p class="step-lead">このまま印刷またはPDF化し、経営陣への稟議書・プレゼン資料として使用できます。</p>
+
+    <div class="exec-doc" id="exec-print-area">
+      <div class="exec-header">
+        <div>
+          <div style="font-size:0.8rem; font-weight:bold; color:var(--accent); letter-spacing:0.05em;">EXECUTIVE PROPOSAL FOR WORKPLACE ENVIRONMENT OPTIMIZATION</div>
+          <div class="doc-title" id="out-proj-title">生産性向上および離職防止に向けた快適職場環境改善計画</div>
+        </div>
+        <div class="doc-meta">
+          提案日: <span id="out-today"></span><br>
+          立案部門: 職場改善推進タスクフォース
+        </div>
+      </div>
+
+      <!-- 1. 経営課題と放置リスク -->
+      <div class="exec-section">
+        <div class="sec-h3">1. 課題提起および現状放置のリスク（Cost of Inaction）</div>
+        <div class="kpi-board">
+          <div class="kpi-card">
+            <div style="font-size:0.75rem; color:var(--slate-600); font-weight:bold;">特定された組織ボトルネック</div>
+            <div style="font-size:1.0rem; font-weight:bold; margin-top:2px;" id="out-risk-name">-</div>
+            <div style="font-size:0.75rem; color:var(--slate-600); margin-top:4px;" id="out-risk-detail">-</div>
+          </div>
+          <div class="kpi-card" style="background:#fff1f2; border-color:#fecdd3;">
+            <div style="font-size:0.75rem; color:#9f1239; font-weight:bold;">放置した場合の年間想定損失（試算）</div>
+            <div class="kpi-val" id="out-loss-calc">約 450 万円 / 年</div>
+            <div style="font-size:0.72rem; color:#9f1239; margin-top:2px;">※休職時代替採用コスト・残業増・手戻り損失を含む</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 具体的ロードマップ -->
+      <div class="exec-section">
+        <div class="sec-h3">2. 段階的実行ロードマップ（投資対効果の最大化）</div>
+        <table class="exec-table">
+          <thead>
+            <tr>
+              <th style="width:15%;">導入段階</th>
+              <th style="width:25%;">採択施策（アクションNo）</th>
+              <th style="width:40%;">現場での運用方法・スモールステップ</th>
+              <th style="width:20%;">経営的KPI・期待成果</th>
+            </tr>
+          </thead>
+          <tbody id="out-roadmap-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- 3. 定量インパクトと投資対効果 -->
+      <div class="exec-section">
+        <div class="sec-h3">3. 期待される定量的リターン（ROI予測）</div>
+        <div class="kpi-board">
+          <div class="kpi-card">
+            <div style="font-size:0.75rem; color:var(--slate-600); font-weight:bold;">必要とされる初期投資</div>
+            <div class="kpi-val good" style="color:#0f172a;">¥0 <span style="font-size:0.8rem; font-weight:normal;">（フェーズ1〜2は運用変更のみ）</span></div>
+            <div style="font-size:0.72rem; color:var(--slate-600); margin-top:2px;">既存の社内資源・ミーティング枠の再設計によりゼロ予算で着手</div>
+          </div>
+          <div class="kpi-card">
+            <div style="font-size:0.75rem; color:var(--slate-600); font-weight:bold;">目標定着KPI（半年後）</div>
+            <div class="kpi-val good" id="out-target-kpi">残業時間 15% 削減 / 離職率 0%</div>
+            <div style="font-size:0.72rem; color:var(--slate-600); margin-top:2px;">次年度ストレスチェック「総合健康リスク値」5pt以上の改善</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 推進上のリスクヘッジ -->
+      <div class="exec-section">
+        <div class="sec-h3">4. 想定される現場の抵抗とコントロール策</div>
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; font-size:0.82rem; border-radius:4px;">
+          <strong>【管理職・現場からの想定反論】：</strong><br>
+          <span id="out-objection" style="color:#991b1b;">-</span><br><br>
+          <strong>【経営承認を得るための統制ルール】：</strong><br>
+          <span id="out-mitigation">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(3)">⬅ パラメータを修正する</button>
+      <button class="btn btn-accent" onclick="window.print()">🖨 経営プレゼン資料を印刷 / PDF保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 30項目のマスターデータ（経営視点のKPI・コスト構造・現場運用法を完全定義）
+  const masterActions = [
+    { no: 1, domain: "A", title: "作業の日程作成に参加する手順を定める", desc: "作業分担や日程計画の作成に作業者と管理監督者が参加する", target: "control", cost: "¥0", phase: "フェーズ1", kpi: "納期遅延率 30% 減", op: "月初の計画作成時に現場代表を10分同席させ、実行可能性を点検するルーティンを確立。" },
+    { no: 2, domain: "A", title: "少数人数単位の裁量範囲を増やす", desc: "進め方や作業順序について小単位で決定できる範囲を増やす", target: "control", cost: "¥0", phase: "フェーズ1", kpi: "意思決定リードタイム半減", op: "定型業務における作業順序の入れ替え権限を現場リーダーに委譲し、承認待ち時間をゼロ化。" },
+    { no: 3, domain: "A", title: "個人あたりの過大な作業量があれば見直す", desc: "特定チームや個人あたりの過大な作業量を点検・再配分する", target: "workload", cost: "¥0", phase: "フェーズ2", kpi: "特定個人残業 40% 減", op: "業務棚卸しシートを作成し、属人化しているタスクを他メンバーへマニュアルとともに分散。" },
+    { no: 4, domain: "A", title: "各自の分担作業を達成感あるものにする", desc: "分担範囲拡大や多能化で個人の技量を生かした達成感ある作業にする", target: "control", cost: "¥0", phase: "フェーズ2", kpi: "業務エンゲージメント向上", op: "工程の一部ではなく完成形まで見届ける担当制、または月替わりの業務ローテーションを試行。" },
+    { no: 5, domain: "A", title: "必要な情報が全員に正しく伝わるようにする", desc: "朝の短時間ミーティング等で作業目標や手順を正しく共有する", target: "support_peer", cost: "¥0", phase: "フェーズ1", kpi: "伝達ミス手戻り 70% 削減", op: "毎朝9:00から3分間「今日手一杯なタスクの有無」だけを申告するスタンドアップ朝礼を固定化。" },
+    { no: 6, domain: "B", title: "労働時間の目標値を定め残業の恒常化をなくす", desc: "1日,1週,1ヶ月ごとの労働時間に目標値を設けノー残業デー等を運用", target: "workload", cost: "¥0", phase: "フェーズ2", kpi: "月間総残業時間 15% 削減", op: "水曜ノー残業デーの形骸化を是正。18:00以降のPC自動シャットダウン・警告灯運用をテスト導入。" },
+    { no: 7, domain: "B", title: "繁忙期やピーク時の作業方法を改善する", desc: "特定時期に個人やチームへ作業が集中しないよう配分を平準化", target: "workload", cost: "¥0", phase: "フェーズ2", kpi: "繁忙期の突発欠勤ゼロ", op: "過去のピーク実績を分析し、閑散期に定型前準備タスク（書類テンプレート作成等）を前倒し。" },
+    { no: 8, domain: "B", title: "休日・休暇が十分取れるようにする", desc: "有休やリフレッシュ休暇が計画的に取れるようにする", target: "workload", cost: "¥0", phase: "フェーズ1", kpi: "有給取得率 80% 達成", op: "四半期初にチーム共有カレンダーへ「有休予定日」を先行入力させ、取得を前提に業務を差配。" },
+    { no: 9, domain: "B", title: "勤務体制,交代制を改善する", desc: "勤務体制を見直し十分な休養時間を確保、過重負担を避ける", target: "workload", cost: "中", phase: "フェーズ3", kpi: "睡眠障害スコア改善", op: "勤務間インターバル11時間規制を社内規程に明文化し、不規則な夜勤・早朝シフトを是正。" },
+    { no: 10, domain: "B", title: "個人の生活条件に合わせて勤務調整ができるようにする", desc: "生活条件やニーズに応じてチーム編成や勤務条件を柔軟に調整", target: "control", cost: "¥0", phase: "フェーズ2", kpi: "介護・育児離職率 0%", op: "時差出勤制度や中抜け制度の暫定利用ガイドラインを定め、現場裁量での運用を承認。" },
+    { no: 11, domain: "C", title: "物品と資材の取り扱い方法を改善する", desc: "物品・資材・書類の保管運搬方法を工夫して負担軽減する", target: "environment", cost: "低", phase: "フェーズ1", kpi: "年間探し物時間 50時間/人 削減", op: "高頻度使用資材の棚配置を腰の高さへ集約。不要な紙ファイルを全廃し定位置管理を徹底。" },
+    { no: 12, domain: "C", title: "個人ごとの作業場所を仕事しやすくする", desc: "各自の作業場のレイアウト、姿勢、操作方法を改善する", target: "environment", cost: "低", phase: "フェーズ1", kpi: "身体愁訴（肩こり・腰痛）低減", op: "デュアルディスプレイ配置基準の作成、ノートPCスタンド導入による執務姿勢の標準化。" },
+    { no: 13, domain: "C", title: "作業の指示や表示内容をわかりやすくする", desc: "作業指示や情報がいつでも容易に入手・確認できるようにする", target: "environment", cost: "¥0", phase: "フェーズ1", kpi: "新任者の習熟期間 30% 短縮", op: "チェックシートのカラーラベル化、作業マニュアルへの図解・写真追加を義務付け。" },
+    { no: 14, domain: "C", title: "反復・過密・単調作業を改善する", desc: "心身に負担となる反復・過密・単調作業を点検し適正化する", target: "workload", cost: "中", phase: "フェーズ3", kpi: "単純入力ミス 80% 削減", op: "反復転記作業にノーコードツールやRPAを一部導入し、人手による単調作業を自動化。" },
+    { no: 15, domain: "C", title: "作業ミス防止策を多面に講じる", desc: "手順標準化やマニュアル作成など重大な結果に至らない対策を講じる", target: "environment", cost: "¥0", phase: "フェーズ2", kpi: "インシデント報告精度向上", op: "「人為的ミスを責めない」フールプルーフ設計。確認項目を5つ以内に絞った指差し点検表の導入。" },
+    { no: 16, domain: "D", title: "温熱環境や音環境,視環境を快適化する", desc: "空調、照明、騒音などを整え個々の作業者にとって快適にする", target: "environment", cost: "低", phase: "フェーズ2", kpi: "午後の生産性低下防止", op: "サーキュレーター設置による執務室内温度ムラの解消、Web会議用集中ブースの簡易設置。" },
+    { no: 17, domain: "D", title: "有害環境源を隔離する", desc: "粉じん、化学物質などの有害源を隔離し防護対策を講じる", target: "environment", cost: "高", phase: "フェーズ3", kpi: "労災リスク完全遮断", op: "安全衛生委員会の巡視に基づく防護設備の更新および保護具着用の点検ログ義務化。" },
+    { no: 18, domain: "D", title: "職場の受動喫煙を防止する", desc: "話し合いに基づいて職場の受動喫煙防止対策をすすめる", target: "environment", cost: "低", phase: "フェーズ1", kpi: "受動喫煙クレーム ゼロ化", op: "喫煙専用室の基準遵守点検および喫煙後のエレベーター利用・執務室復帰ルールの周知徹底。" },
+    { no: 19, domain: "D", title: "衛生設備と休養設備を改善する", desc: "快適なトイレ、更衣室、くつろげる休憩場所や飲料設備を備える", target: "environment", cost: "低", phase: "フェーズ2", kpi: "職場満足度アンケート向上", op: "使われていない打合せ室を「沈黙休憩室（飲食・仮眠可）」として12:00〜14:00限定開放。" },
+    { no: 20, domain: "D", title: "緊急時対応の手順を改善する", desc: "緊急時に適切に対応できるよう設備改善・通路確保・訓練を行う", target: "environment", cost: "¥0", phase: "フェーズ1", kpi: "BCP初動対応時間半減", op: "執務室内の避難動線上に置かれた私物・荷物の即時撤去、緊急時安否確認連絡網の点検。" },
+    { no: 21, domain: "E", title: "上司に相談しやすい環境を整備する", desc: "普段から上司や責任者に報告・相談しやすい環境を整えておく", target: "support_mgr", cost: "¥0", phase: "フェーズ1", kpi: "重大問題の早期検知率 100%", op: "週1回15分の「1on1（雑談可の壁打ちミーティング）」を管理職の必須業務としてスケジュールブロック。" },
+    { no: 22, domain: "E", title: "同僚に相談できコミュニケーションがとりやすい環境を整備する", desc: "同僚間で相談し合えるよう作業グループ単位で定期会合を持つ", target: "support_peer", cost: "¥0", phase: "フェーズ1", kpi: "チーム内心理的安全性向上", op: "チャットツール内に「ちょっと質問・助けて部屋」を新設し、質問への回答に感謝スタンプを推奨。" },
+    { no: 23, domain: "E", title: "チームワークづくりをすすめる", desc: "互いを理解し支えあう雰囲気が生まれるよう懇親や研修の機会を持つ", target: "support_peer", cost: "低", phase: "フェーズ2", kpi: "部署横断連携プロジェクト数 増", op: "四半期に1度、勤務時間内に45分の「相互の強み・業務共有ワークショップ」を定期開催。" },
+    { no: 24, domain: "E", title: "仕事に対する適切な評価を受け取ることができる", desc: "実績に基づいて納得できる形でタイミングよく評価を受け取れるようにする", target: "support_mgr", cost: "¥0", phase: "フェーズ2", kpi: "評価納得度 85% 以上", op: "期末の事後評価だけでなく、月次で「良かった点・改善期待点」を短いテキストで返す習慣を徹底。" },
+    { no: 25, domain: "E", title: "職場間の相互支援を推進する", desc: "職場や部署間で作業がしやすくなるよう情報交換や連絡調整を推進する", target: "support_peer", cost: "¥0", phase: "フェーズ2", kpi: "他部署クレーム件数 50% 減", op: "前工程・後工程の代表者が月1回30分集まり、パス出しのファイル形式や納期ルールを調整。" },
+    { no: 26, domain: "F", title: "個人の健康や健康問題について相談できる窓口を設置する", desc: "心の健康や悩みについて気兼ねなく相談できる窓口・体制を確保する", target: "support_mgr", cost: "¥0", phase: "フェーズ1", kpi: "産業医面談利用の抵抗感解消", op: "社外EAP窓口および社内保健スタッフの連絡先を、イントラネット最上部に常時固定表示。" },
+    { no: 27, domain: "F", title: "セルフケアについて学ぶ機会を設ける", desc: "自己健康管理に役立つ情報を提供し研修を実施する", target: "control", cost: "低", phase: "フェーズ2", kpi: "高ストレス者比率 5pt 減", op: "全社員向けに15分間のマイクロeラーニング（認知行動療法に基づくセルフコーピング）を配信。" },
+    { no: 28, domain: "F", title: "組織や仕事の急激な変化にあらかじめ対処する", desc: "将来計画や作業編成の変更について普段から周知されているようにする", target: "control", cost: "¥0", phase: "フェーズ2", kpi: "組織改編時の不信感払拭", op: "方針決定の背景と移行ロードマップを、確定前段階から月次タウンホールミーティングで先行共有。" },
+    { no: 29, domain: "F", title: "昇進・昇格,資格取得の機会を明確にしチャンスを公平に確保する", desc: "キャリア開発の機会や基準が明確にされ公平に与えられるようにする", target: "control", cost: "¥0", phase: "フェーズ3", kpi: "若手3年以内離職率 0%", op: "等級ごとの期待要件と昇格審査プロセスを社内ポータルに全面開示し、不透明感を排除。" },
+    { no: 30, domain: "F", title: "緊急の心のケア", desc: "突発的事故発生時に緊急処置やケアが受けられる体制を整えておく", target: "support_mgr", cost: "¥0", phase: "フェーズ1", kpi: "緊急時対応プロトコル策定済", op: "インシデント発生後48時間以内に産業保健スタッフが介入する緊急メンタル対応フローを明文化。" }
+  ];
+
+  const riskProfiles = {
+    workload: {
+      name: "仕事の量的負担過大（残業常態化・ボトルネック集中）",
+      detail: "特定人材への過重負荷、恒常的な月45時間超残業、繁忙期の疲弊が深刻化。",
+      lossFactor: 480, // 万円
+      objection: "「売上を落とせないのだから残業削減など不可能だ。人を増やす予算もない」",
+      mitigation: "新規採用を要求するのではなく、無駄な社内会議の削減と定型作業の平準化により【現状の人員・労働時間内での売上維持】を検証します。"
+    },
+    control: {
+      name: "仕事の裁量権欠如（過剰管理・指示待ち・見通し不安）",
+      detail: "現場での決定権限が極めて小さく、承認待ちの滞留とやらされ感が蔓延。",
+      lossFactor: 350,
+      objection: "「現場に自由を与えると品質がブレたり規律が崩れる恐れがある」",
+      mitigation: "成果物の判定基準（納品品質・納期）は厳格に固定し、【順序と段取りのみ】を現場委譲することで品質リスクを完全にヘッジします。"
+    },
+    support_mgr: {
+      name: "上司支援ラインの不全（心理的安全性の欠如・相談不能）",
+      detail: "上司への心理的敷居が高く、トラブル発生時のエスカレーションが大幅に遅延。",
+      lossFactor: 520,
+      objection: "「管理職も現場業務で手一杯であり、これ以上部下のメンタルケアに時間を割けない」",
+      mitigation: "面談を増やすのではなく【週1回15分の定例ショート1on1】に規格化し、雑談ではなく『進捗の障害排除』に特化させ管理職の負担を最小化します。"
+    },
+    support_peer: {
+      name: "同僚支援・情報共有の不全（孤立・セクショナリズム）",
+      detail: "相互支援の希薄化による手戻り多発、新任者の放置、他部署への責任転嫁。",
+      lossFactor: 380,
+      objection: "「業務時間中に雑談やチームビルディングなどやっている暇はない」",
+      mitigation: "飲み会等の親睦ではなく【毎朝3分のタスク共有朝礼】という業務同期システムとして導入し、情報伝達ミスによる手戻り時間を劇的に削減します。"
+    },
+    environment: {
+      name: "作業環境・手順の不備（非効率導線・頻発するミス）",
+      detail: "不親切な指示書、探し物による時間浪費、身体的疲弊による集中力切れ。",
+      lossFactor: 300,
+      objection: "「オフィス改修や高価な什器の買い替えにお金をかける余裕はない」",
+      mitigation: "ハード改修ではなく【書類の定位置管理・5S・指示書のラベル化】というコストゼロの運用改善から着手し、即座に作業時間を短縮します。"
+    }
+  };
+
+  let selectedRiskKey = null;
+  let chosenActions = [];
+
+  function selectRisk(key, cardEl) {
+    selectedRiskKey = key;
+    document.querySelectorAll('.risk-card').forEach(c => c.classList.remove('selected'));
+    cardEl.classList.add('selected');
+    document.getElementById('btn-to-2').disabled = false;
+  }
+
+  function goStep(stepNumber) {
+    document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.flow-step').forEach((st, idx) => {
+      st.classList.remove('active');
+      if (idx + 1 < stepNumber) st.classList.add('completed');
+      else st.classList.remove('completed');
+    });
+
+    document.getElementById(`step-${stepNumber}`).classList.add('active');
+    document.getElementById(`f-${stepNumber}`).classList.add('active');
+
+    if (stepNumber === 2) renderActionSelection();
+    if (stepNumber === 3) renderPhaseSlots();
+    if (stepNumber === 4) generateExecutiveDoc();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderActionSelection() {
+    const grid = document.getElementById('action-grid-box');
+    grid.innerHTML = '';
+    chosenActions = [];
+    updatePickCounter();
+
+    const filtered = masterActions.filter(a => a.target === selectedRiskKey);
+
+    filtered.forEach(act => {
+      const card = document.createElement('div');
+      card.className = 'action-card';
+      card.id = `card-${act.no}`;
+      card.onclick = () => toggleAction(act);
+
+      card.innerHTML = `
+        <div>
+          <div class="meta-badges">
+            <span class="badge b-domain">領域 ${act.domain} / No.${act.no}</span>
+            <span class="badge b-cost">費用: ${act.cost}</span>
+            <span class="badge b-roi">${act.kpi}</span>
+          </div>
+          <strong style="font-size:0.95rem; display:block; margin-bottom:6px;">${act.title}</strong>
+          <p style="font-size:0.8rem; color:var(--slate-600); margin-bottom:8px;">${act.desc}</p>
+        </div>
+        <div style="font-size:0.75rem; background:#f8fafc; padding:8px; border-radius:4px; border-left:3px solid var(--accent);">
+          <strong>現場実装策：</strong>${act.op.substring(0, 45)}...
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function toggleAction(act) {
+    const idx = chosenActions.findIndex(a => a.no === act.no);
+    const card = document.getElementById(`card-${act.no}`);
+
+    if (idx > -1) {
+      chosenActions.splice(idx, 1);
+      card.classList.remove('selected');
+    } else {
+      if (chosenActions.length >= 3) {
+        alert("経営陣へ提示する施策は、実行確度を担保するため【3項目】に絞り込みます。");
+        return;
+      }
+      chosenActions.push(act);
+      card.classList.add('selected');
+    }
+    updatePickCounter();
+  }
+
+  function updatePickCounter() {
+    document.getElementById('pick-count').innerText = chosenActions.length;
+    document.getElementById('btn-to-3').disabled = chosenActions.length !== 3;
+  }
+
+  function renderPhaseSlots() {
+    // 選択された3つをフェーズ1〜3に割り当て
+    chosenActions.forEach((act, idx) => {
+      const textEl = document.getElementById(`slot-text-${idx}`);
+      const slotEl = document.getElementById(`slot-${idx}`);
+      slotEl.classList.add('filled');
+      textEl.innerHTML = `
+        <strong style="color:var(--primary); font-size:0.9rem;">No.${act.no} ${act.title}</strong>
+        <div style="font-size:0.8rem; color:var(--slate-600); margin-top:2px;">【運用】${act.op}</div>
+        <div style="font-size:0.75rem; color:var(--success); font-weight:bold; margin-top:2px;">期待成果: ${act.kpi}（初期費用: ${act.cost}）</div>
+      `;
+    });
+  }
+
+  function generateExecutiveDoc() {
+    const now = new Date();
+    document.getElementById('out-today').innerText = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+    
+    const projName = document.getElementById('param-projname').value || "快適職場環境改善計画";
+    const headcount = parseInt(document.getElementById('param-headcount').value, 10) || 20;
+    document.getElementById('out-proj-title').innerText = projName;
+
+    const risk = riskProfiles[selectedRiskKey];
+    document.getElementById('out-risk-name').innerText = risk.name;
+    document.getElementById('out-risk-detail').innerText = risk.detail;
+
+    // 損失額試算：人数に応じてスケール
+    const calculatedLoss = Math.round((risk.lossFactor * (headcount / 20)));
+    document.getElementById('out-loss-calc').innerText = `約 ${calculatedLoss} 万円 / 年`;
+
+    // ロードマップ表
+    const tbody = document.getElementById('out-roadmap-tbody');
+    tbody.innerHTML = '';
+    const phaseTitles = [
+      "フェーズ1（1ヶ月目〜）<br><span style='font-size:0.7rem; color:var(--success); font-weight:bold;'>即時実行・投資ゼロ</span>",
+      "フェーズ2（2〜3ヶ月目）<br><span style='font-size:0.7rem; color:var(--accent); font-weight:bold;'>運用・標準化</span>",
+      "フェーズ3（4〜6ヶ月目）<br><span style='font-size:0.7rem; color:var(--primary); font-weight:bold;'>全社・仕組み化</span>"
+    ];
+
+    chosenActions.forEach((act, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${phaseTitles[idx]}</strong></td>
+        <td><strong>No.${act.no}</strong><br>${act.title}</td>
+        <td>${act.op}</td>
+        <td><strong style="color:var(--primary);">${act.kpi}</strong><br><span style="font-size:0.75rem; color:var(--slate-600);">費用：${act.cost}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('out-objection').innerText = risk.objection;
+    document.getElementById('out-mitigation').innerText = risk.mitigation;
+  }
+</script>
+</body>
+</html>
