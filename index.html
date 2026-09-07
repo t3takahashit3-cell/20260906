@@ -13,6 +13,7 @@
       --primary-dark: #004d73;     /* 濃い引き締めネイビー */
       --accent: #00b4d8;           /* 明るいアクアブルー */
       --accent-warm: #ff6b35;      /* 注目を引きつけるオレンジ */
+      --accent-special: #7928ca;   /* 特別ツールのパープル/ブルー */
       --text-main: #2b3a4a;        /* 視認性の高いダークグレー */
       --text-muted: #627282;       /* 補助テキスト */
       --bg-light: #f8fafc;         /* クリーンな背景色 */
@@ -213,7 +214,7 @@
       border-radius: 2px;
     }
 
-    /* 資料ダウンロードカード */
+    /* 資料・ツール グリッド */
     .resource-grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -239,10 +240,35 @@
       border-color: #b0d7f2;
     }
 
+    /* 本大会資料用ハイライト */
     .resource-card.featured {
       background: #fbfdff;
       border-left: 6px solid var(--accent-warm);
       border-color: #ffd8cc var(--border) var(--border) var(--accent-warm);
+    }
+
+    /* ★最注目：改善提案シート用プレミアムスタイル */
+    .resource-card.special-highlight {
+      background: linear-gradient(135deg, #ffffff 0%, #f7f3ff 100%);
+      border: 2px solid #a855f7;
+      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resource-card.special-highlight::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 100%;
+      background: linear-gradient(to bottom, #7928ca, #ff0080);
+    }
+
+    .resource-card.special-highlight:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(168, 85, 247, 0.25);
     }
 
     .resource-title-wrap {
@@ -276,10 +302,21 @@
       color: #0d8a4f;
     }
 
+    .badge-special {
+      background: linear-gradient(135deg, #7928ca, #ff0080);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(121, 40, 202, 0.3);
+    }
+
     .resource-title {
       font-size: 1.05rem;
       font-weight: 700;
       color: var(--text-main);
+    }
+
+    .resource-title.special-title {
+      font-size: 1.15rem;
+      color: #3b0764;
     }
 
     .btn-action {
@@ -312,6 +349,20 @@
     .btn-action.btn-external:hover {
       background: #0d8a4f;
       color: #ffffff;
+    }
+
+    .btn-action.btn-special {
+      background: linear-gradient(135deg, #7928ca, #a855f7);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 14px rgba(121, 40, 202, 0.35);
+      padding: 11px 24px;
+    }
+
+    .btn-action.btn-special:hover {
+      background: linear-gradient(135deg, #6020a0, #9333ea);
+      box-shadow: 0 6px 18px rgba(121, 40, 202, 0.45);
+      transform: translateY(-1px);
     }
 
     /* お問い合わせバナー */
@@ -407,7 +458,7 @@
     <div class="hero-sub">令和8年度 上小地区労働衛生大会</div>
     <h1 class="hero-title">ストレスチェック結果を活用した<br><span class="highlight">「快適職場」</span>づくり</h1>
     <p class="hero-lead">
-      本大会の講演資料および、職場環境改善・ストレスチェック制度の各種マニュアルをご提供しています。
+      本大会の講演資料および、職場環境改善・ストレスチェック制度の各種マニュアル・実践ツールをご提供しています。
     </p>
   </section>
 
@@ -428,13 +479,25 @@
       </div>
     </div>
 
-    <!-- 資料ダウンロード・関連リンク -->
+    <!-- 資料ダウンロード・実践ツール・関連リンク -->
     <section>
       <div class="section-head">
-        <h2 class="section-title">資料ダウンロード・関連サイト</h2>
+        <h2 class="section-title">資料・実践ツール・関連サイト</h2>
       </div>
 
       <div class="resource-grid">
+
+        <!-- ★特別注目：職場環境改善提案シート（GitHub Pages経由でアプリ画面として起動） -->
+        <div class="resource-card special-highlight">
+          <div class="resource-title-wrap">
+            <span class="badge-pill badge-special">★ おすすめ実践WEBツール</span>
+            <div class="resource-title special-title">「アクションチェックリスト」から作る職場環境改善提案シート</div>
+          </div>
+          <a href="https://t3takahashit3-cell.github.io/20260906/20260907josyogame2.html" target="_blank" rel="noopener noreferrer" class="btn-action btn-special">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+            WEBツールを開く
+          </a>
+        </div>
         
         <!-- 1. 今回の資料完全版 -->
         <div class="resource-card featured">
